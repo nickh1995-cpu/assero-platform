@@ -1,0 +1,180 @@
+.compCard {
+  position: relative;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.compCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border-color: rgba(44, 90, 120, 0.3);
+}
+
+.compCard.clickable {
+  cursor: pointer;
+}
+
+.compCard.clickable:hover {
+  border-color: #2c5a78;
+}
+
+/* Similarity Badge */
+.similarityBadge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: rgba(44, 90, 120, 0.95);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Image */
+.imageContainer {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  background: #f1f5f9;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.compCard:hover .image {
+  transform: scale(1.05);
+}
+
+.imagePlaceholder {
+  width: 100%;
+  height: 180px;
+  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.placeholderIcon {
+  font-size: 3rem;
+  opacity: 0.4;
+}
+
+/* Content */
+.content {
+  padding: 1.25rem;
+}
+
+.title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #102231;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.location {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+  color: #718096;
+  margin-bottom: 0.75rem;
+}
+
+.price {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c5a78;
+  margin-bottom: 1rem;
+}
+
+/* Specs */
+.specs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(209, 213, 219, 0.3);
+}
+
+.specItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+}
+
+.specLabel {
+  color: #718096;
+  font-weight: 500;
+}
+
+.specValue {
+  color: #102231;
+  font-weight: 600;
+}
+
+/* View Link */
+.viewLink {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  color: #2c5a78;
+  font-weight: 600;
+  text-align: center;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(209, 213, 219, 0.3);
+  transition: color 0.2s ease;
+}
+
+.compCard:hover .viewLink {
+  color: #4a90a4;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .imageContainer,
+  .imagePlaceholder {
+    height: 140px;
+  }
+
+  .content {
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 1rem;
+  }
+
+  .price {
+    font-size: 1.25rem;
+  }
+
+  .similarityBadge {
+    top: 0.5rem;
+    right: 0.5rem;
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
+  }
+}
+

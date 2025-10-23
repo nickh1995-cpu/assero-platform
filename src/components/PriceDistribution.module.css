@@ -1,0 +1,224 @@
+.container {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #102231;
+  margin: 0 0 1.5rem 0;
+}
+
+/* Percentile Badge */
+.percentileBadge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.percentileValue {
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-top: 0.25rem;
+  opacity: 0.95;
+}
+
+/* Distribution Visualization */
+.distribution {
+  margin-bottom: 2rem;
+}
+
+.distributionBar {
+  position: relative;
+  height: 120px;
+  margin-bottom: 2rem;
+}
+
+.gradient {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 12px;
+  transform: translateY(-50%);
+  background: linear-gradient(90deg, 
+    rgba(199, 167, 112, 0.3) 0%, 
+    rgba(44, 90, 120, 0.5) 50%, 
+    rgba(199, 167, 112, 0.3) 100%
+  );
+  border-radius: 6px;
+}
+
+/* Markers */
+.marker {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 2px;
+}
+
+.markerLine {
+  width: 3px;
+  height: 120px;
+  background: #2c5a78;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.markerLabel {
+  position: absolute;
+  top: -30px;
+  white-space: nowrap;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  color: #718096;
+  font-weight: 600;
+  text-align: center;
+}
+
+.markerPrice {
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  color: #102231;
+}
+
+/* Range Labels */
+.rangeLabels {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 0.5rem;
+}
+
+.rangeLabel {
+  text-align: center;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.rangeValue {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #102231;
+  margin-bottom: 0.25rem;
+}
+
+.rangeName {
+  font-size: 0.75rem;
+  color: #718096;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Stats Grid */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(209, 213, 219, 0.3);
+}
+
+.statCard {
+  text-align: center;
+  padding: 1rem;
+  background: rgba(244, 247, 250, 0.5);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.statCard:hover {
+  background: rgba(244, 247, 250, 0.8);
+  transform: translateY(-2px);
+}
+
+.statValue {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2c5a78;
+  margin-bottom: 0.25rem;
+}
+
+.statLabel {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  color: #718096;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 1.5rem;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .percentileBadge {
+    font-size: 0.9rem;
+    padding: 0.75rem 1.25rem;
+  }
+
+  .distributionBar {
+    height: 100px;
+  }
+
+  .markerLine {
+    height: 100px;
+  }
+
+  .markerLabel {
+    font-size: 0.7rem;
+  }
+
+  .markerPrice {
+    font-size: 0.75rem;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .statCard {
+    padding: 0.75rem;
+  }
+
+  .statValue {
+    font-size: 1.1rem;
+  }
+}
+

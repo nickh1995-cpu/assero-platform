@@ -1,0 +1,671 @@
+/* ASSERO DEALROOM STYLES */
+/* Premium Investment Management Platform */
+
+/* ==============================================
+   GLOBAL STYLES
+   ============================================== */
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ==============================================
+   LOADING STATES
+   ============================================== */
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 24px;
+}
+
+.loadingSpinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #f3f4f6;
+  border-top: 4px solid #2c5a78;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ==============================================
+   HERO SECTION
+   ============================================== */
+
+.heroSection {
+  background: linear-gradient(135deg, #0b1a24 0%, #102231 50%, #2c5a78 100%);
+  color: white;
+  padding: 80px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.heroSection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  opacity: 0.1;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.heroTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 4rem;
+  font-weight: 700;
+  margin: 0 0 24px 0;
+  background: linear-gradient(135deg, #ffffff 0%, #c7a770 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.heroSubtitle {
+  font-size: 1.25rem;
+  font-weight: 400;
+  opacity: 0.9;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ==============================================
+   SECTIONS
+   ============================================== */
+
+.section {
+  padding: 80px 0;
+  background: #f4f7fa;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 48px;
+}
+
+.headerActions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.sectionTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #102231;
+  margin: 0;
+}
+
+/* ==============================================
+   BUTTONS
+   ============================================== */
+
+.btnPrimary {
+  background: linear-gradient(135deg, #2c5a78 0%, #4a90a4 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(44, 90, 120, 0.3);
+}
+
+.btnPrimary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(44, 90, 120, 0.4);
+}
+
+.btnSecondary {
+  background: white;
+  color: #2c5a78;
+  border: 2px solid #2c5a78;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btnSecondary:hover {
+  background: #2c5a78;
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* ==============================================
+   PORTFOLIO GRID
+   ============================================== */
+
+.portfolioGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 32px;
+}
+
+.portfolioCard {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 8px 32px rgba(16, 34, 49, 0.1);
+  border: 1px solid rgba(44, 90, 120, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.portfolioCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #2c5a78 0%, #c7a770 100%);
+}
+
+.portfolioCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(16, 34, 49, 0.15);
+}
+
+.portfolioHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.portfolioName {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #102231;
+  margin: 0;
+  flex: 1;
+}
+
+.portfolioValue {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2c5a78;
+  background: linear-gradient(135deg, #2c5a78 0%, #4a90a4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.portfolioDescription {
+  color: #6b7280;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.portfolioStats {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.statNumber {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #102231;
+  margin-bottom: 4px;
+}
+
+.statLabel {
+  font-size: 0.8rem;
+  color: #6b7280;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.portfolioActions {
+  display: flex;
+  gap: 12px;
+}
+
+/* ==============================================
+   DEALS GRID
+   ============================================== */
+
+.dealsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 24px;
+}
+
+.dealCard {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(16, 34, 49, 0.08);
+  border: 1px solid rgba(44, 90, 120, 0.1);
+  transition: all 0.3s ease;
+}
+
+.dealCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(16, 34, 49, 0.12);
+}
+
+.dealHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.dealTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #102231;
+  margin: 0;
+  flex: 1;
+  margin-right: 12px;
+}
+
+.statusBadge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.dealDescription {
+  color: #6b7280;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.dealMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.dealInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dealType {
+  font-size: 0.8rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+.dealValue {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #2c5a78;
+}
+
+.dealDate {
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.dealActions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ==============================================
+   ASSET ALLOCATION
+   ============================================== */
+
+.allocationGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.allocationCard {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(16, 34, 49, 0.08);
+  border: 1px solid rgba(44, 90, 120, 0.1);
+  transition: all 0.3s ease;
+}
+
+.allocationCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(16, 34, 49, 0.12);
+}
+
+.allocationHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.allocationType {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #102231;
+  margin: 0;
+}
+
+.allocationPercentage {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2c5a78;
+}
+
+.allocationBar {
+  width: 100%;
+  height: 8px;
+  background: #f3f4f6;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.allocationFill {
+  height: 100%;
+  background: linear-gradient(135deg, #2c5a78 0%, #4a90a4 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.allocationDetails {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.allocationValue,
+.allocationTarget {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.valueLabel,
+.targetLabel {
+  font-size: 0.8rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.valueAmount {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #102231;
+}
+
+.targetAmount {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #2c5a78;
+}
+
+/* ==============================================
+   EMPTY STATES
+   ============================================== */
+
+.emptyState {
+  text-align: center;
+  padding: 80px 24px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(16, 34, 49, 0.08);
+  border: 1px solid rgba(44, 90, 120, 0.1);
+}
+
+.emptyIcon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 24px;
+  color: #c7a770;
+}
+
+.emptyState h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #102231;
+  margin: 0 0 12px 0;
+}
+
+.emptyState p {
+  color: #6b7280;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0 0 24px 0;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ==============================================
+   RESPONSIVE DESIGN
+   ============================================== */
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+  }
+  
+  .heroTitle {
+    font-size: 2.5rem;
+  }
+  
+  .sectionTitle {
+    font-size: 2rem;
+  }
+  
+  .sectionHeader {
+    flex-direction: column;
+    gap: 24px;
+    align-items: flex-start;
+  }
+  
+  .portfolioGrid,
+  .dealsGrid,
+  .allocationGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .portfolioCard,
+  .dealCard,
+  .allocationCard {
+    padding: 20px;
+  }
+  
+  .portfolioHeader,
+  .dealHeader,
+  .allocationHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .portfolioStats {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .dealMeta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .allocationDetails {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroSection {
+    padding: 60px 0;
+  }
+  
+  .section {
+    padding: 60px 0;
+  }
+  
+  .heroTitle {
+    font-size: 2rem;
+  }
+  
+  .sectionTitle {
+    font-size: 1.75rem;
+  }
+  
+  .portfolioCard,
+  .dealCard,
+  .allocationCard {
+    padding: 16px;
+  }
+  
+  .portfolioActions,
+  .dealActions {
+    flex-direction: column;
+  }
+}
+
+/* ==============================================
+   ANIMATIONS
+   ============================================== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.portfolioCard,
+.dealCard,
+.allocationCard {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.portfolioCard:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.portfolioCard:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.dealCard:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.dealCard:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.dealCard:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+/* ==============================================
+   GLASSMORPHISM EFFECTS
+   ============================================== */
+
+.portfolioCard,
+.dealCard,
+.allocationCard {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.heroSection {
+  backdrop-filter: blur(20px);
+}
+
+/* ==============================================
+   PREMIUM SHADOWS
+   ============================================== */
+
+.portfolioCard {
+  box-shadow: 
+    0 8px 32px rgba(16, 34, 49, 0.1),
+    0 2px 8px rgba(16, 34, 49, 0.05);
+}
+
+.dealCard {
+  box-shadow: 
+    0 4px 16px rgba(16, 34, 49, 0.08),
+    0 1px 4px rgba(16, 34, 49, 0.04);
+}
+
+.allocationCard {
+  box-shadow: 
+    0 4px 16px rgba(16, 34, 49, 0.08),
+    0 1px 4px rgba(16, 34, 49, 0.04);
+}
+
+/* ==============================================
+   HOVER EFFECTS
+   ============================================== */
+
+.portfolioCard:hover,
+.dealCard:hover,
+.allocationCard:hover {
+  box-shadow: 
+    0 16px 48px rgba(16, 34, 49, 0.15),
+    0 4px 16px rgba(16, 34, 49, 0.08);
+}
+
+.btnPrimary:hover,
+.btnSecondary:hover {
+  box-shadow: 0 8px 24px rgba(44, 90, 120, 0.3);
+}

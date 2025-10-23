@@ -1,0 +1,16 @@
+{
+  "brandName": "ASSERO",
+  "palette": {
+    "ink": "#102231",
+    "ink700": "#0f2433",
+    "blue": "#2c5a78",
+    "gold": "#c7a770",
+    "bgLight": "#f4f7fa",
+    "bgDark": "#0b1a24"
+  },
+  "typography": {
+    "display": "Playfair Display",
+    "body": "Montserrat"
+  }
+}
+

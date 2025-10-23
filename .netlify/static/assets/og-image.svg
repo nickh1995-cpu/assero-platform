@@ -1,0 +1,64 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0b1a24;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2c3e50;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#c7a770;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e6c088;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  
+  <!-- Decorative elements -->
+  <circle cx="100" cy="100" r="80" fill="url(#accentGradient)" opacity="0.1"/>
+  <circle cx="1100" cy="530" r="120" fill="url(#accentGradient)" opacity="0.1"/>
+  <rect x="900" y="50" width="200" height="200" fill="url(#accentGradient)" opacity="0.05" rx="20"/>
+  
+  <!-- Main content -->
+  <g transform="translate(100, 150)">
+    <!-- Logo/Title -->
+    <text x="0" y="80" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="white">
+      ASSERO
+    </text>
+    
+    <!-- Subtitle -->
+    <text x="0" y="140" font-family="Arial, sans-serif" font-size="32" fill="url(#accentGradient)">
+      Europas erste Multi-Asset Plattform
+    </text>
+    
+    <!-- Description -->
+    <text x="0" y="200" font-family="Arial, sans-serif" font-size="24" fill="#bdc3c7" max-width="800">
+      Exklusive Investments in Immobilien, Luxusuhren &amp; Klassiker
+    </text>
+    
+    <!-- Asset categories -->
+    <g transform="translate(0, 280)">
+      <rect x="0" y="0" width="180" height="60" fill="url(#accentGradient)" rx="8"/>
+      <text x="90" y="35" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white" text-anchor="middle">
+        Immobilien
+      </text>
+      
+      <rect x="200" y="0" width="180" height="60" fill="url(#accentGradient)" rx="8"/>
+      <text x="290" y="35" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white" text-anchor="middle">
+        Luxusuhren
+      </text>
+      
+      <rect x="400" y="0" width="180" height="60" fill="url(#accentGradient)" rx="8"/>
+      <text x="490" y="35" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white" text-anchor="middle">
+        Klassiker
+      </text>
+    </g>
+    
+    <!-- CTA -->
+    <text x="0" y="400" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="url(#accentGradient)">
+      Founders Circle für Premium-Investoren
+    </text>
+  </g>
+  
+  <!-- Bottom accent -->
+  <rect x="0" y="580" width="1200" height="50" fill="url(#accentGradient)"/>
+</svg>
