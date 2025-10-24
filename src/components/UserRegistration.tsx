@@ -115,7 +115,9 @@ export function UserRegistration({ onRegistrationComplete, onClose }: UserRegist
         email: formData.email,
         password: formData.password,
         options: {
-          emailRedirectTo: `${process.env.NODE_ENV === 'production' ? 'https://assero.io' : window.location.origin}/auth/callback`,
+          emailRedirectTo: window.location.hostname === 'localhost' 
+            ? `${window.location.origin}/auth/callback`
+            : 'https://assero.io/auth/callback',
           data: {
             first_name: formData.firstName,
             last_name: formData.lastName,

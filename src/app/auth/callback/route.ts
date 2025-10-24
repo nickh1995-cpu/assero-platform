@@ -12,8 +12,9 @@ export async function GET(request: NextRequest) {
   }
 
   // Redirect to dashboard after successful email confirmation
-  const redirectUrl = process.env.NODE_ENV === 'production' 
-    ? 'https://assero.io/dashboard' 
-    : `${requestUrl.origin}/dashboard`
+  const isLocalhost = requestUrl.hostname === 'localhost'
+  const redirectUrl = isLocalhost 
+    ? `${requestUrl.origin}/dashboard`
+    : 'https://assero.io/dashboard'
   return NextResponse.redirect(redirectUrl)
 }
