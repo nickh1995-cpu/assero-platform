@@ -69,6 +69,27 @@ function DealroomContent() {
   const [showDealModal, setShowDealModal] = useState(false);
 
   useEffect(() => {
+    const supabase = getSupabaseBrowserClient();
+    
+    // Set up auth state listener for session persistence
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.id);
+        
+        if (event === 'SIGNED_IN' && session?.user) {
+          setUser(session.user);
+          setShowRegistration(false);
+          setShowNavigation(true);
+          // Reload data when user signs in
+          window.location.reload();
+        } else if (event === 'SIGNED_OUT') {
+          setUser(null);
+          setShowRegistration(true);
+          setShowNavigation(false);
+        }
+      }
+    );
+
     // Set a timeout to prevent infinite loading
     const timeoutId = setTimeout(() => {
       console.warn('Data loading timeout - forcing loading to stop');
@@ -76,7 +97,6 @@ function DealroomContent() {
     }, 10000); // 10 second timeout
 
     async function loadDealroomData() {
-      const supabase = getSupabaseBrowserClient();
       
       try {
         console.log('Starting data load...');
@@ -85,6 +105,14 @@ function DealroomContent() {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
           console.log('No user found, showing registration');
+          setShowRegistration(true);
+          setLoading(false);
+          return;
+        }
+        
+        // Check if user's email is confirmed
+        if (user.email_confirmed_at === null) {
+          console.log('User email not confirmed, showing registration');
           setShowRegistration(true);
           setLoading(false);
           return;
@@ -191,8 +219,11 @@ function DealroomContent() {
 
     loadDealroomData();
     
-    // Cleanup timeout on unmount
-    return () => clearTimeout(timeoutId);
+    // Cleanup timeout and auth listener on unmount
+    return () => {
+      clearTimeout(timeoutId);
+      subscription?.unsubscribe();
+    };
   }, []); // Remove router dependency to prevent multiple loads
 
   const createSampleData = async () => {
@@ -343,11 +374,17 @@ function DealroomContent() {
   };
 
   const handleRegistrationComplete = (userData: any) => {
+    console.log('Registration completed:', userData);
     setShowRegistration(false);
     setUserRole(userData.role);
     setUser(userData.user);
-    // Reload the page to refresh data
-    window.location.reload();
+    
+    // Show success message and redirect after a short delay
+    setTimeout(() => {
+      alert('🎉 Willkommen bei ASSERO! Sie werden zum Dashboard weitergeleitet...');
+      // Redirect to dashboard instead of reloading
+      window.location.href = '/dashboard';
+    }, 1000);
   };
 
   const handleShowNavigation = () => {

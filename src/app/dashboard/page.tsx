@@ -14,9 +14,24 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
+    const supabase = getSupabaseBrowserClient();
+    
+    // Set up auth state listener for session persistence
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Dashboard auth state changed:', event, session?.user?.id);
+        
+        if (event === 'SIGNED_OUT' || !session?.user) {
+          router.push("/sign-in");
+        } else if (event === 'SIGNED_IN' && session?.user) {
+          setUser(session.user);
+          // Reload dashboard data when user signs in
+          window.location.reload();
+        }
+      }
+    );
+
     async function loadDashboardData() {
-      const supabase = getSupabaseBrowserClient();
-      
       try {
         const { data: auth } = await supabase.auth.getUser();
         if (!auth.user) {
@@ -60,6 +75,11 @@ export default function DashboardPage() {
     }
     
     loadDashboardData();
+    
+    // Cleanup auth listener on unmount
+    return () => {
+      subscription?.unsubscribe();
+    };
   }, [router]);
 
   const formatPrice = (price: number | null, currency: string | null) => {

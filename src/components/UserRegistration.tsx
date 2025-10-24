@@ -110,11 +110,12 @@ export function UserRegistration({ onRegistrationComplete, onClose }: UserRegist
     try {
       const supabase = getSupabaseBrowserClient();
       
-      // Create user account
+      // Create user account with email confirmation
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
+          emailRedirectTo: `${process.env.NODE_ENV === 'production' ? 'https://assero.io' : window.location.origin}/auth/callback`,
           data: {
             first_name: formData.firstName,
             last_name: formData.lastName,
@@ -126,6 +127,15 @@ export function UserRegistration({ onRegistrationComplete, onClose }: UserRegist
       if (authError) throw authError;
 
       if (authData.user) {
+        // Check if user needs email confirmation
+        if (authData.user.email_confirmed_at === null) {
+          // User needs to confirm email
+          alert('📧 Bestätigungs-E-Mail gesendet!\n\nBitte überprüfen Sie Ihr E-Mail-Postfach und klicken Sie auf den Bestätigungslink.\n\nNach der Bestätigung können Sie sich einloggen.');
+          
+          // Close registration modal
+          onClose?.();
+          return;
+        }
         // Create user role
         const { error: roleError } = await supabase
           .from('user_roles')
@@ -166,6 +176,7 @@ export function UserRegistration({ onRegistrationComplete, onClose }: UserRegist
           if (sellerError) throw sellerError;
         }
 
+        // Call completion callback (success message will be shown by parent component)
         onRegistrationComplete?.({
           user: authData.user,
           role: formData.userType,

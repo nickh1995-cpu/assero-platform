@@ -36,9 +36,20 @@ export default function SignInPage() {
 
       if (error) {
         console.error('Sign in error:', error);
-        setError(`❌ ${error.message}`);
+        if (error.message.includes('email not confirmed')) {
+          setError(`📧 E-Mail noch nicht bestätigt!\n\nBitte überprüfen Sie Ihr E-Mail-Postfach und klicken Sie auf den Bestätigungslink.`);
+        } else {
+          setError(`❌ ${error.message}`);
+        }
         setLoading(false);
       } else if (data.user) {
+        // Check if email is confirmed
+        if (data.user.email_confirmed_at === null) {
+          setError(`📧 E-Mail noch nicht bestätigt!\n\nBitte überprüfen Sie Ihr E-Mail-Postfach und klicken Sie auf den Bestätigungslink.`);
+          setLoading(false);
+          return;
+        }
+        
         console.log('Sign in successful, redirecting to dashboard');
         setError("✅ Anmeldung erfolgreich! Weiterleitung...");
         
