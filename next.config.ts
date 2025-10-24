@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
   images: isStaticExport ? { unoptimized: true } : undefined,
   
   // Silence monorepo root inference warning
-  outputFileTracingRoot: path.join(__dirname, ".."),
+  // outputFileTracingRoot: path.join(__dirname, ".."),
   
   // Performance optimizations - Disable turbopack to avoid EMFILE issues
   experimental: {
