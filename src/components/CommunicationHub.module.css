@@ -1,0 +1,605 @@
+/* COMMUNICATION HUB STYLES */
+/* Premium Chat Interface with Glassmorphism */
+
+/* ==============================================
+   COMMUNICATION HUB
+   ============================================== */
+
+.communicationHub {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(16, 34, 49, 0.08);
+  overflow: hidden;
+}
+
+/* ==============================================
+   MESSAGES HEADER
+   ============================================== */
+
+.messagesHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(44, 90, 120, 0.1);
+  background: rgba(248, 250, 252, 0.5);
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.sectionTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #102231;
+  margin: 0;
+}
+
+.messageCount {
+  background: rgba(44, 90, 120, 0.1);
+  color: #2c5a78;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.headerActions {
+  display: flex;
+  gap: 8px;
+}
+
+.actionButton {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(44, 90, 120, 0.1);
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+}
+
+.actionButton:hover {
+  background: rgba(44, 90, 120, 0.05);
+  border-color: #2c5a78;
+}
+
+.actionButton svg {
+  width: 16px;
+  height: 16px;
+  color: #6b7280;
+}
+
+/* ==============================================
+   MESSAGES CONTAINER
+   ============================================== */
+
+.messagesContainer {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 0;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.messagesList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 24px;
+}
+
+/* ==============================================
+   MESSAGE ITEMS
+   ============================================== */
+
+.messageItem {
+  display: flex;
+  margin-bottom: 8px;
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.ownMessage {
+  justify-content: flex-end;
+}
+
+.otherMessage {
+  justify-content: flex-start;
+}
+
+.messageContent {
+  max-width: 70%;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 16px rgba(16, 34, 49, 0.06);
+  position: relative;
+}
+
+.ownMessage .messageContent {
+  background: linear-gradient(135deg, #2c5a78 0%, #4a90a4 100%);
+  color: white;
+  border-color: rgba(44, 90, 120, 0.3);
+}
+
+.messageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.senderInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.senderAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2c5a78 0%, #c7a770 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.senderAvatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.senderDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.senderName {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #102231;
+}
+
+.ownMessage .senderName {
+  color: white;
+}
+
+.messageTime {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.ownMessage .messageTime {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.messageType {
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
+.messageBody {
+  line-height: 1.5;
+}
+
+.messageText {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #102231;
+}
+
+.ownMessage .messageText {
+  color: white;
+}
+
+.messageMetadata {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(44, 90, 120, 0.1);
+}
+
+.ownMessage .messageMetadata {
+  border-top-color: rgba(255, 255, 255, 0.2);
+}
+
+.documentAttachment,
+.statusChange {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(44, 90, 120, 0.05);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #2c5a78;
+}
+
+.ownMessage .documentAttachment,
+.ownMessage .statusChange {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.documentAttachment svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* ==============================================
+   MESSAGE INPUT
+   ============================================== */
+
+.messageInput {
+  padding: 20px 24px;
+  border-top: 1px solid rgba(44, 90, 120, 0.1);
+  background: rgba(248, 250, 252, 0.5);
+}
+
+.inputContainer {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(44, 90, 120, 0.1);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 4px 16px rgba(16, 34, 49, 0.06);
+}
+
+.messageTextarea {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: #102231;
+  line-height: 1.5;
+  max-height: 120px;
+  min-height: 20px;
+}
+
+.messageTextarea::placeholder {
+  color: #9ca3af;
+}
+
+.inputActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.attachButton,
+.sendButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+}
+
+.attachButton {
+  color: #6b7280;
+}
+
+.attachButton:hover {
+  background: rgba(44, 90, 120, 0.05);
+  color: #2c5a78;
+}
+
+.sendButton {
+  background: linear-gradient(135deg, #2c5a78 0%, #4a90a4 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(44, 90, 120, 0.3);
+}
+
+.sendButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(44, 90, 120, 0.4);
+}
+
+.sendButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.sendButton svg {
+  width: 16px;
+  height: 16px;
+}
+
+.sendSpinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ==============================================
+   LOADING STATE
+   ============================================== */
+
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  gap: 20px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f4f6;
+  border-top: 3px solid #2c5a78;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loadingState p {
+  color: #6b7280;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* ==============================================
+   EMPTY STATE
+   ============================================== */
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  text-align: center;
+}
+
+.emptyIcon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 24px;
+  color: #c7a770;
+}
+
+.emptyState h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #102231;
+  margin: 0 0 12px 0;
+}
+
+.emptyState p {
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ==============================================
+   RESPONSIVE DESIGN
+   ============================================== */
+
+@media (max-width: 768px) {
+  .messagesHeader {
+    padding: 16px 20px;
+  }
+  
+  .sectionTitle {
+    font-size: 1.1rem;
+  }
+  
+  .messagesList {
+    padding: 0 20px;
+  }
+  
+  .messageContent {
+    max-width: 85%;
+    padding: 12px;
+  }
+  
+  .messageInput {
+    padding: 16px 20px;
+  }
+  
+  .inputContainer {
+    padding: 10px;
+  }
+  
+  .senderInfo {
+    gap: 8px;
+  }
+  
+  .senderAvatar {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+  
+  .senderName {
+    font-size: 0.85rem;
+  }
+  
+  .messageTime {
+    font-size: 0.7rem;
+  }
+  
+  .messageText {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .messagesHeader {
+    padding: 12px 16px;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .headerLeft {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  
+  .messagesList {
+    padding: 0 16px;
+  }
+  
+  .messageContent {
+    max-width: 90%;
+    padding: 10px;
+  }
+  
+  .messageInput {
+    padding: 12px 16px;
+  }
+  
+  .inputContainer {
+    padding: 8px;
+  }
+  
+  .messageTextarea {
+    font-size: 0.9rem;
+  }
+  
+  .attachButton,
+  .sendButton {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* ==============================================
+   ANIMATIONS
+   ============================================== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.messageItem {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.messageItem:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.messageItem:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.messageItem:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+/* ==============================================
+   SCROLLBAR STYLING
+   ============================================== */
+
+.messagesContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.messagesContainer::-webkit-scrollbar-track {
+  background: rgba(44, 90, 120, 0.05);
+  border-radius: 3px;
+}
+
+.messagesContainer::-webkit-scrollbar-thumb {
+  background: rgba(44, 90, 120, 0.2);
+  border-radius: 3px;
+}
+
+.messagesContainer::-webkit-scrollbar-thumb:hover {
+  background: rgba(44, 90, 120, 0.3);
+}
+
+/* ==============================================
+   PREMIUM EFFECTS
+   ============================================== */
+
+.communicationHub {
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(16, 34, 49, 0.1),
+    0 2px 8px rgba(16, 34, 49, 0.05);
+}
+
+.messageContent {
+  backdrop-filter: blur(15px);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 
+    0 4px 16px rgba(16, 34, 49, 0.08),
+    0 1px 4px rgba(16, 34, 49, 0.04);
+}
+
+.ownMessage .messageContent {
+  background: linear-gradient(135deg, rgba(44, 90, 120, 0.95) 0%, rgba(74, 144, 164, 0.95) 100%);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 4px 16px rgba(44, 90, 120, 0.2),
+    0 1px 4px rgba(44, 90, 120, 0.1);
+}
+
+.inputContainer {
+  backdrop-filter: blur(15px);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 
+    0 4px 16px rgba(16, 34, 49, 0.08),
+    0 1px 4px rgba(16, 34, 49, 0.04);
+}

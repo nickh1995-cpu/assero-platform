@@ -1,0 +1,301 @@
+/* MOBILE TOUCH HANDLER STYLES */
+/* Premium Touch Gestures with Visual Feedback */
+
+/* ==============================================
+   TOUCH HANDLER
+   ============================================== */
+
+.touchHandler {
+  position: relative;
+  touch-action: pan-x pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* ==============================================
+   LONG PRESS INDICATOR
+   ============================================== */
+
+.longPressIndicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.longPressRipple {
+  width: 60px;
+  height: 60px;
+  border: 3px solid rgba(44, 90, 120, 0.6);
+  border-radius: 50%;
+  animation: longPressPulse 1s ease-in-out infinite;
+}
+
+@keyframes longPressPulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* ==============================================
+   TOUCH FEEDBACK
+   ============================================== */
+
+.touchHandler:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease;
+}
+
+/* ==============================================
+   SWIPE INDICATORS
+   ============================================== */
+
+.swipeIndicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.swipeIndicator.show {
+  opacity: 1;
+}
+
+.swipeIndicatorLeft {
+  right: 20px;
+  left: auto;
+  transform: translateY(-50%);
+}
+
+.swipeIndicatorRight {
+  left: 20px;
+  right: auto;
+  transform: translateY(-50%);
+}
+
+.swipeIndicatorUp {
+  bottom: 20px;
+  top: auto;
+  transform: translateX(-50%);
+}
+
+.swipeIndicatorDown {
+  top: 20px;
+  bottom: auto;
+  transform: translateX(-50%);
+}
+
+/* ==============================================
+   PINCH INDICATOR
+   ============================================== */
+
+.pinchIndicator {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(44, 90, 120, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+}
+
+.pinchIndicator.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ==============================================
+   TAP FEEDBACK
+   ============================================== */
+
+.tapRipple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(44, 90, 120, 0.3);
+  pointer-events: none;
+  animation: tapRipple 0.6s ease-out;
+}
+
+@keyframes tapRipple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* ==============================================
+   MOBILE OPTIMIZATIONS
+   ============================================== */
+
+@media (max-width: 768px) {
+  .touchHandler {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  .longPressRipple {
+    width: 80px;
+    height: 80px;
+    border-width: 4px;
+  }
+  
+  .swipeIndicator {
+    font-size: 0.9rem;
+    padding: 12px 16px;
+  }
+  
+  .pinchIndicator {
+    font-size: 0.9rem;
+    padding: 10px 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .longPressRipple {
+    width: 100px;
+    height: 100px;
+    border-width: 5px;
+  }
+  
+  .swipeIndicator {
+    font-size: 0.8rem;
+    padding: 10px 14px;
+  }
+  
+  .pinchIndicator {
+    font-size: 0.8rem;
+    padding: 8px 12px;
+  }
+}
+
+/* ==============================================
+   ACCESSIBILITY
+   ============================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .longPressRipple,
+  .tapRipple {
+    animation: none;
+  }
+  
+  .touchHandler:active {
+    transform: none;
+  }
+}
+
+/* ==============================================
+   DARK MODE SUPPORT
+   ============================================== */
+
+@media (prefers-color-scheme: dark) {
+  .longPressRipple {
+    border-color: rgba(74, 144, 164, 0.6);
+  }
+  
+  .pinchIndicator {
+    background: rgba(74, 144, 164, 0.9);
+  }
+  
+  .tapRipple {
+    background: rgba(74, 144, 164, 0.3);
+  }
+}
+
+/* ==============================================
+   HIGH CONTRAST MODE
+   ============================================== */
+
+@media (prefers-contrast: high) {
+  .longPressRipple {
+    border-color: #000;
+    border-width: 4px;
+  }
+  
+  .pinchIndicator {
+    background: #000;
+    color: #fff;
+    border: 2px solid #fff;
+  }
+  
+  .tapRipple {
+    background: rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* ==============================================
+   PREMIUM EFFECTS
+   ============================================== */
+
+.touchHandler {
+  backdrop-filter: blur(0px);
+  transition: backdrop-filter 0.3s ease;
+}
+
+.touchHandler:active {
+  backdrop-filter: blur(2px);
+}
+
+.longPressIndicator {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  padding: 20px;
+}
+
+.longPressRipple {
+  backdrop-filter: blur(5px);
+  background: rgba(44, 90, 120, 0.1);
+  border: 3px solid rgba(44, 90, 120, 0.8);
+  box-shadow: 
+    0 0 20px rgba(44, 90, 120, 0.3),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.pinchIndicator {
+  backdrop-filter: blur(15px);
+  background: rgba(44, 90, 120, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 8px 24px rgba(16, 34, 49, 0.2),
+    0 2px 8px rgba(16, 34, 49, 0.1);
+}
+
+.tapRipple {
+  backdrop-filter: blur(5px);
+  background: rgba(44, 90, 120, 0.4);
+  box-shadow: 
+    0 0 20px rgba(44, 90, 120, 0.2),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+}

@@ -1,24 +1,56 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 export function Header() {
   const [email, setEmail] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const router = useRouter();
+
+  // Prevent unnecessary re-renders during development
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     const supabase = getSupabaseBrowserClient();
     if (supabase) {
       supabase.auth.getUser().then(({ data }) => {
         setEmail(data.user?.email ?? null);
+        setUserName(data.user?.user_metadata?.first_name ?? data.user?.email?.split('@')[0] ?? 'Benutzer');
       }).catch((error) => {
         console.warn("Error getting user:", error);
         setEmail(null);
+        setUserName(null);
       });
     }
   }, []);
+
+  // Close dropdown when clicking outside - optimized to prevent unnecessary re-renders
+  useEffect(() => {
+    if (!userDropdownOpen) return;
+    
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest('.user-dropdown-container')) {
+        setUserDropdownOpen(false);
+      }
+    };
+
+    // Use a small delay to prevent immediate closing
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('mousedown', handleClickOutside);
+    }, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [userDropdownOpen]);
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -27,6 +59,35 @@ export function Header() {
   const closeMobileMenu = () => {
     setMobileMenuOpen(false);
   };
+
+  const handleSignOut = useCallback(async () => {
+    try {
+      const supabase = getSupabaseBrowserClient();
+      await supabase.auth.signOut();
+      setEmail(null);
+      setUserName(null);
+      setUserDropdownOpen(false);
+      router.push('/');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  }, [router]);
+
+  const toggleUserDropdown = useCallback(() => {
+    setUserDropdownOpen(prev => !prev);
+  }, []);
+
+  const handleMouseEnter = useCallback(() => {
+    setUserDropdownOpen(true);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setTimeout(() => setUserDropdownOpen(false), 1000);
+  }, []);
+
+  const handleDropdownMouseLeave = useCallback(() => {
+    setTimeout(() => setUserDropdownOpen(false), 800);
+  }, []);
 
   return (
     <header className="site-header" aria-label="Primary">
@@ -54,7 +115,80 @@ export function Header() {
             <li><Link href="/dealroom">Dealroom</Link></li>
             <li><Link href="/insights">Insights</Link></li>
             <li><Link href="/list/create" className="nav-cta">Inserieren</Link></li>
-            <li>{email ? <Link href="/dashboard">Konto</Link> : <Link href="/sign-in">Anmelden</Link>}</li>
+            <li>
+              {email ? (
+                <div className="user-dropdown-container">
+                  <Link 
+                    href="/dashboard" 
+                    className="nav-link"
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    Konto
+                  </Link>
+                  
+                  {isClient && userDropdownOpen && (
+                    <div 
+                      className={`user-dropdown ${userDropdownOpen ? 'show' : ''}`}
+                      onMouseEnter={handleMouseEnter}
+                      onMouseLeave={handleDropdownMouseLeave}
+                    >
+                      <div className="user-dropdown-header">
+                        <div className="user-info">
+                          <div className="user-avatar-large">
+                            {userName?.charAt(0).toUpperCase() || 'U'}
+                          </div>
+                          <div className="user-details">
+                            <div className="user-name-large">{userName}</div>
+                            <div className="user-email">{email}</div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="user-dropdown-menu">
+                        <Link href="/dashboard" className="dropdown-item" onClick={() => setUserDropdownOpen(false)}>
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M2 4L8 1L14 4V11L8 14L2 11V4Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M6 8L8 10L10 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                          Dashboard
+                        </Link>
+                        
+                        <Link href="/dealroom" className="dropdown-item" onClick={() => setUserDropdownOpen(false)}>
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M2 3H14V13H2V3Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M6 7H10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                            <path d="M6 9H10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                          </svg>
+                          Dealroom
+                        </Link>
+                        
+                        <Link href="/wallet" className="dropdown-item" onClick={() => setUserDropdownOpen(false)}>
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M2 4H14V12H2V4Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M4 6H12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                          </svg>
+                          Wallet
+                        </Link>
+                        
+                        <div className="dropdown-divider"></div>
+                        
+                        <button className="dropdown-item sign-out" onClick={handleSignOut}>
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M6 14H3C2.44772 14 2 13.5523 2 13V3C2 2.44772 2.44772 2 3 2H6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M10 11L14 7L10 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M14 7H6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                          Abmelden
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Link href="/sign-in">Anmelden</Link>
+              )}
+            </li>
           </ul>
         </nav>
 
@@ -68,7 +202,28 @@ export function Header() {
               <li><Link href="/dealroom" onClick={closeMobileMenu}>Dealroom</Link></li>
               <li><Link href="/insights" onClick={closeMobileMenu}>Insights</Link></li>
               <li><Link href="/list/create" className="nav-cta" onClick={closeMobileMenu}>Inserieren</Link></li>
-              <li>{email ? <Link href="/dashboard" onClick={closeMobileMenu}>Konto</Link> : <Link href="/sign-in" onClick={closeMobileMenu}>Anmelden</Link>}</li>
+              <li>
+                {email ? (
+                  <div className="mobile-user-section">
+                    <Link href="/dashboard" className="mobile-user-link" onClick={closeMobileMenu}>
+                      Konto
+                    </Link>
+                    <div className="mobile-user-actions">
+                      <Link href="/dealroom" className="mobile-user-link" onClick={closeMobileMenu}>
+                        Dealroom
+                      </Link>
+                      <Link href="/wallet" className="mobile-user-link" onClick={closeMobileMenu}>
+                        Wallet
+                      </Link>
+                      <button className="mobile-sign-out" onClick={handleSignOut}>
+                        Abmelden
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <Link href="/sign-in" onClick={closeMobileMenu}>Anmelden</Link>
+                )}
+              </li>
             </ul>
           </nav>
         )}

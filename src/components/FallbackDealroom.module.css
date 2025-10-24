@@ -1,0 +1,244 @@
+/* FALLBACK DEALROOM STYLES */
+/* Error state and retry functionality */
+
+.fallbackContainer {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: linear-gradient(135deg, rgba(248, 250, 252, 0.8) 0%, rgba(255, 255, 255, 0.9) 100%);
+}
+
+.fallbackContent {
+  max-width: 600px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 32px 64px rgba(16, 34, 49, 0.1);
+  text-align: center;
+}
+
+.fallbackIcon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  color: #f59e0b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(245, 158, 11, 0.1);
+  border-radius: 50%;
+}
+
+.fallbackIcon svg {
+  width: 40px;
+  height: 40px;
+}
+
+.fallbackTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #102231;
+  margin: 0 0 16px 0;
+}
+
+.fallbackDescription {
+  font-size: 1.1rem;
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0 0 24px 0;
+}
+
+.fallbackList {
+  text-align: left;
+  background: rgba(248, 250, 252, 0.8);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 0 0 32px 0;
+  list-style: none;
+}
+
+.fallbackList li {
+  padding: 8px 0;
+  color: #374151;
+  font-size: 0.95rem;
+  position: relative;
+  padding-left: 24px;
+}
+
+.fallbackList li::before {
+  content: "•";
+  color: #2c5a78;
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+}
+
+.fallbackActions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.retryButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #2c5a78 0%, #4a90a4 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(44, 90, 120, 0.3);
+}
+
+.retryButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(44, 90, 120, 0.4);
+}
+
+.retryButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.setupButton {
+  background: rgba(44, 90, 120, 0.1);
+  border: 1px solid rgba(44, 90, 120, 0.2);
+  color: #2c5a78;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.setupButton:hover {
+  background: rgba(44, 90, 120, 0.2);
+  border-color: #2c5a78;
+  transform: translateY(-1px);
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.fallbackHelp {
+  background: rgba(44, 90, 120, 0.05);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: left;
+}
+
+.fallbackHelp h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #102231;
+  margin: 0 0 12px 0;
+}
+
+.fallbackHelp p {
+  color: #6b7280;
+  font-size: 0.9rem;
+  margin: 0 0 12px 0;
+  line-height: 1.5;
+}
+
+.fallbackHelp ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.fallbackHelp li {
+  padding: 4px 0;
+  color: #374151;
+  font-size: 0.85rem;
+  position: relative;
+  padding-left: 16px;
+}
+
+.fallbackHelp li::before {
+  content: "→";
+  color: #2c5a78;
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+}
+
+/* ==============================================
+   RESPONSIVE DESIGN
+   ============================================== */
+
+@media (max-width: 768px) {
+  .fallbackContainer {
+    padding: 20px 16px;
+  }
+  
+  .fallbackContent {
+    padding: 32px 24px;
+  }
+  
+  .fallbackTitle {
+    font-size: 1.75rem;
+  }
+  
+  .fallbackDescription {
+    font-size: 1rem;
+  }
+  
+  .fallbackActions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .retryButton,
+  .setupButton {
+    width: 100%;
+    max-width: 300px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .fallbackContent {
+    padding: 24px 20px;
+  }
+  
+  .fallbackTitle {
+    font-size: 1.5rem;
+  }
+  
+  .fallbackIcon {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .fallbackIcon svg {
+    width: 30px;
+    height: 30px;
+  }
+}

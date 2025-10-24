@@ -1,0 +1,945 @@
+/* TEAM WORKSPACE STYLES */
+/* Premium Collaboration Tools with Team Management */
+
+/* ==============================================
+   TEAM WORKSPACE
+   ============================================== */
+
+.teamWorkspace {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 24px;
+  background: rgba(248, 250, 252, 0.5);
+  min-height: 100vh;
+}
+
+/* ==============================================
+   WORKSPACE HEADER
+   ============================================== */
+
+.workspaceHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(16, 34, 49, 0.1);
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.workspaceTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #102231;
+  margin: 0;
+}
+
+.workspaceDescription {
+  color: #6b7280;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.workspaceMeta {
+  display: flex;
+  gap: 24px;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.memberCount,
+.createdDate {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.inviteButton,
+.settingsButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(44, 90, 120, 0.1);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #2c5a78;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.inviteButton {
+  background: linear-gradient(135deg, #2c5a78 0%, #4a90a4 100%);
+  color: white;
+  border-color: transparent;
+}
+
+.inviteButton:hover,
+.settingsButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(44, 90, 120, 0.2);
+}
+
+.inviteButton:hover {
+  box-shadow: 0 8px 24px rgba(44, 90, 120, 0.3);
+}
+
+.inviteButton svg,
+.settingsButton svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ==============================================
+   TABS CONTAINER
+   ============================================== */
+
+.tabsContainer {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(16, 34, 49, 0.1);
+  overflow: hidden;
+}
+
+.tabs {
+  display: flex;
+  background: rgba(248, 250, 252, 0.8);
+  border-bottom: 1px solid rgba(44, 90, 120, 0.1);
+}
+
+.tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.tab:hover {
+  background: rgba(44, 90, 120, 0.05);
+  color: #2c5a78;
+}
+
+.tabActive {
+  background: #2c5a78;
+  color: white;
+}
+
+.tabIcon {
+  font-size: 1.1rem;
+}
+
+.tabLabel {
+  font-size: 0.85rem;
+}
+
+.tabContent {
+  padding: 24px;
+}
+
+/* ==============================================
+   OVERVIEW CONTENT
+   ============================================== */
+
+.overviewContent {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.overviewGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.overviewCard {
+  background: rgba(248, 250, 252, 0.8);
+  border: 1px solid rgba(44, 90, 120, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.overviewCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(16, 34, 49, 0.1);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(44, 90, 120, 0.1);
+}
+
+.cardTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #102231;
+  margin: 0;
+}
+
+.cardIcon {
+  font-size: 1.5rem;
+  opacity: 0.7;
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.statItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.statLabel {
+  font-size: 0.9rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.statValue {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #102231;
+}
+
+.activityItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  border-left: 4px solid #2c5a78;
+}
+
+.activityIcon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.activityText {
+  flex: 1;
+}
+
+.activityTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #102231;
+  margin-bottom: 2px;
+}
+
+.activitySubtitle {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* ==============================================
+   MEMBERS CONTENT
+   ============================================== */
+
+.membersContent {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.membersHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(44, 90, 120, 0.1);
+}
+
+.membersTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #102231;
+  margin: 0;
+}
+
+.addMemberButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #2c5a78 0%, #4a90a4 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.addMemberButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(44, 90, 120, 0.3);
+}
+
+.addMemberButton svg {
+  width: 16px;
+  height: 16px;
+}
+
+.membersList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.memberCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(248, 250, 252, 0.8);
+  border: 1px solid rgba(44, 90, 120, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.memberCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(16, 34, 49, 0.1);
+}
+
+.memberInfo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.memberAvatar {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(44, 90, 120, 0.1);
+  flex-shrink: 0;
+}
+
+.memberAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatarPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2c5a78;
+  background: rgba(44, 90, 120, 0.1);
+}
+
+.statusIndicator {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.memberDetails {
+  flex: 1;
+  min-width: 0;
+}
+
+.memberName {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #102231;
+  margin: 0 0 4px 0;
+}
+
+.memberEmail {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.memberMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.memberRole,
+.memberStatus,
+.memberLastSeen {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.memberRole {
+  font-weight: 600;
+}
+
+.memberActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.roleSelect {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(44, 90, 120, 0.1);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  color: #102231;
+  cursor: pointer;
+}
+
+.removeButton {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border-radius: 6px;
+  padding: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.removeButton:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+}
+
+.removeButton svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ==============================================
+   SETTINGS CONTENT
+   ============================================== */
+
+.settingsContent {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.settingsTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #102231;
+  margin: 0;
+}
+
+.settingsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.settingGroup {
+  background: rgba(248, 250, 252, 0.8);
+  border: 1px solid rgba(44, 90, 120, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.settingTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #102231;
+  margin: 0 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(44, 90, 120, 0.1);
+}
+
+.settingItem {
+  margin-bottom: 16px;
+}
+
+.settingLabel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #102231;
+  font-weight: 500;
+}
+
+.settingLabel input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #2c5a78;
+}
+
+/* ==============================================
+   ACTIVITY CONTENT
+   ============================================== */
+
+.activityContent {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.activityTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #102231;
+  margin: 0;
+}
+
+.activityTimeline {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.timelineItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px;
+  background: rgba(248, 250, 252, 0.8);
+  border: 1px solid rgba(44, 90, 120, 0.1);
+  border-radius: 12px;
+  border-left: 4px solid #2c5a78;
+}
+
+.timelineIcon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.timelineContent {
+  flex: 1;
+}
+
+.timelineTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #102231;
+  margin-bottom: 4px;
+}
+
+.timelineSubtitle {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* ==============================================
+   MODAL
+   ============================================== */
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(16, 34, 49, 0.5);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modalContent {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 32px 64px rgba(16, 34, 49, 0.2);
+  width: 100%;
+  max-width: 500px;
+  overflow: hidden;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(44, 90, 120, 0.1);
+}
+
+.modalTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #102231;
+  margin: 0;
+}
+
+.modalClose {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.modalClose:hover {
+  background: rgba(107, 114, 128, 0.1);
+  color: #374151;
+}
+
+.modalClose svg {
+  width: 20px;
+  height: 20px;
+}
+
+.modalBody {
+  padding: 24px;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.formLabel {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #102231;
+  margin-bottom: 8px;
+}
+
+.formInput,
+.formSelect {
+  width: 100%;
+  background: rgba(248, 250, 252, 0.8);
+  border: 1px solid rgba(44, 90, 120, 0.1);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  color: #102231;
+  transition: all 0.3s ease;
+}
+
+.formInput:focus,
+.formSelect:focus {
+  outline: none;
+  border-color: #2c5a78;
+  box-shadow: 0 0 0 3px rgba(44, 90, 120, 0.1);
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px 24px;
+  border-top: 1px solid rgba(44, 90, 120, 0.1);
+}
+
+.cancelButton {
+  background: rgba(107, 114, 128, 0.1);
+  border: 1px solid rgba(107, 114, 128, 0.2);
+  color: #6b7280;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancelButton:hover {
+  background: rgba(107, 114, 128, 0.2);
+  border-color: #6b7280;
+}
+
+/* ==============================================
+   LOADING & EMPTY STATES
+   ============================================== */
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  gap: 24px;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #f3f4f6;
+  border-top: 4px solid #2c5a78;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loadingContainer p {
+  color: #6b7280;
+  margin: 0;
+  font-weight: 500;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(16, 34, 49, 0.1);
+}
+
+.emptyIcon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 24px;
+  color: #c7a770;
+}
+
+.emptyState h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #102231;
+  margin: 0 0 12px 0;
+}
+
+.emptyState p {
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ==============================================
+   RESPONSIVE DESIGN
+   ============================================== */
+
+@media (max-width: 768px) {
+  .teamWorkspace {
+    padding: 16px;
+    gap: 24px;
+  }
+  
+  .workspaceHeader {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  
+  .headerActions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .tabs {
+    flex-wrap: wrap;
+  }
+  
+  .tab {
+    flex: 1 1 auto;
+    min-width: 120px;
+  }
+  
+  .tabContent {
+    padding: 16px;
+  }
+  
+  .overviewGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .settingsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .memberCard {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  
+  .memberActions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .modalContent {
+    margin: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .workspaceTitle {
+    font-size: 1.5rem;
+  }
+  
+  .workspaceMeta {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .tab {
+    padding: 12px 16px;
+    font-size: 0.8rem;
+  }
+  
+  .tabIcon {
+    font-size: 1rem;
+  }
+  
+  .tabLabel {
+    font-size: 0.8rem;
+  }
+  
+  .tabContent {
+    padding: 12px;
+  }
+  
+  .memberCard {
+    padding: 16px;
+  }
+  
+  .memberInfo {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .memberActions {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* ==============================================
+   ANIMATIONS
+   ============================================== */
+
+.overviewCard,
+.memberCard,
+.timelineItem {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.overviewCard:nth-child(1) { animation-delay: 0.1s; }
+.overviewCard:nth-child(2) { animation-delay: 0.2s; }
+
+.memberCard:nth-child(1) { animation-delay: 0.1s; }
+.memberCard:nth-child(2) { animation-delay: 0.2s; }
+.memberCard:nth-child(3) { animation-delay: 0.3s; }
+
+.timelineItem:nth-child(1) { animation-delay: 0.1s; }
+.timelineItem:nth-child(2) { animation-delay: 0.2s; }
+.timelineItem:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==============================================
+   PREMIUM EFFECTS
+   ============================================== */
+
+.teamWorkspace {
+  background: linear-gradient(135deg, rgba(248, 250, 252, 0.8) 0%, rgba(255, 255, 255, 0.9) 100%);
+}
+
+.workspaceHeader,
+.tabsContainer {
+  backdrop-filter: blur(25px);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 
+    0 8px 32px rgba(16, 34, 49, 0.12),
+    0 2px 8px rgba(16, 34, 49, 0.06);
+}
+
+.overviewCard,
+.memberCard,
+.settingGroup,
+.timelineItem {
+  backdrop-filter: blur(15px);
+  background: rgba(248, 250, 252, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 16px rgba(16, 34, 49, 0.08);
+}
+
+.overviewCard:hover,
+.memberCard:hover,
+.timelineItem:hover {
+  backdrop-filter: blur(20px);
+  background: rgba(248, 250, 252, 0.95);
+  box-shadow: 0 8px 24px rgba(16, 34, 49, 0.12);
+}
+
+.modalContent {
+  backdrop-filter: blur(30px);
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 
+    0 32px 64px rgba(16, 34, 49, 0.2),
+    0 8px 32px rgba(16, 34, 49, 0.1);
+}

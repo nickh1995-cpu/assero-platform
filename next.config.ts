@@ -15,7 +15,11 @@ const nextConfig: NextConfig = {
   // Performance optimizations - Disable turbopack to avoid EMFILE issues
   experimental: {
     optimizePackageImports: ['@supabase/supabase-js'],
+    scrollRestoration: true,
   },
+  
+  // Transpile packages for better compatibility
+  transpilePackages: ['@supabase/supabase-js'],
   
   // Webpack configuration - Optimize file watching for macOS
   webpack: (config, { isServer, dev }) => {

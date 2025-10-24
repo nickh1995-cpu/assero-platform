@@ -1,0 +1,781 @@
+/* ASSET LIBRARY STYLES */
+/* Premium Asset Management with Advanced Search & Filter */
+
+/* ==============================================
+   ASSET LIBRARY
+   ============================================== */
+
+.assetLibrary {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  background: rgba(248, 250, 252, 0.5);
+  min-height: 100vh;
+}
+
+/* ==============================================
+   LIBRARY HEADER
+   ============================================== */
+
+.libraryHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(16, 34, 49, 0.1);
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.libraryTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #102231;
+  margin: 0;
+}
+
+.assetCount {
+  color: #6b7280;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.filterButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(44, 90, 120, 0.1);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #2c5a78;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filterButton:hover {
+  background: rgba(44, 90, 120, 0.05);
+  border-color: #2c5a78;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(44, 90, 120, 0.2);
+}
+
+.filterButton svg {
+  width: 16px;
+  height: 16px;
+}
+
+.viewControls {
+  display: flex;
+  gap: 4px;
+  background: rgba(248, 250, 252, 0.8);
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.viewButton {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.viewButton:hover {
+  background: rgba(44, 90, 120, 0.05);
+}
+
+.viewActive {
+  background: #2c5a78;
+  color: white;
+}
+
+.viewButton svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ==============================================
+   SEARCH SECTION
+   ============================================== */
+
+.searchSection {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(16, 34, 49, 0.1);
+}
+
+.searchContainer {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.searchInput {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(248, 250, 252, 0.8);
+  border: 1px solid rgba(44, 90, 120, 0.1);
+  border-radius: 12px;
+  padding: 12px 16px;
+  transition: all 0.3s ease;
+}
+
+.searchInput:focus-within {
+  border-color: #2c5a78;
+  box-shadow: 0 0 0 3px rgba(44, 90, 120, 0.1);
+}
+
+.searchIcon {
+  width: 20px;
+  height: 20px;
+  color: #6b7280;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.searchField {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 0.95rem;
+  color: #102231;
+  font-family: inherit;
+}
+
+.searchField::placeholder {
+  color: #9ca3af;
+}
+
+.sortControls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.sortSelect {
+  background: rgba(248, 250, 252, 0.8);
+  border: 1px solid rgba(44, 90, 120, 0.1);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  color: #102231;
+  cursor: pointer;
+}
+
+.sortOrderButton {
+  background: rgba(248, 250, 252, 0.8);
+  border: 1px solid rgba(44, 90, 120, 0.1);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2c5a78;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.sortOrderButton:hover {
+  background: rgba(44, 90, 120, 0.05);
+  border-color: #2c5a78;
+}
+
+/* ==============================================
+   FILTERS PANEL
+   ============================================== */
+
+.filtersPanel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  padding: 20px;
+  background: rgba(248, 250, 252, 0.5);
+  border-radius: 12px;
+  border: 1px solid rgba(44, 90, 120, 0.1);
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filterLabel {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #102231;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.filterOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filterOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.filterOption input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #2c5a78;
+}
+
+.filterOptionLabel {
+  font-size: 0.9rem;
+  color: #102231;
+  font-weight: 500;
+}
+
+.priceRange {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.priceInput {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(44, 90, 120, 0.1);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  color: #102231;
+}
+
+.priceInput:focus {
+  outline: none;
+  border-color: #2c5a78;
+  box-shadow: 0 0 0 2px rgba(44, 90, 120, 0.1);
+}
+
+.filterActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.clearFiltersButton {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.clearFiltersButton:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+}
+
+/* ==============================================
+   BULK ACTIONS
+   ============================================== */
+
+.bulkActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #2c5a78 0%, #4a90a4 100%);
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(44, 90, 120, 0.3);
+}
+
+.bulkInfo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.bulkInfo span {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.selectAllButton {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.selectAllButton:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.bulkButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.bulkButton {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.bulkButton:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+/* ==============================================
+   ASSETS CONTAINER
+   ============================================== */
+
+.assetsContainer {
+  display: grid;
+  gap: 20px;
+}
+
+.gridView {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.listView {
+  grid-template-columns: 1fr;
+}
+
+.assetCard {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(16, 34, 49, 0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.assetCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(16, 34, 49, 0.15);
+}
+
+.assetSelected {
+  border-color: #2c5a78;
+  background: rgba(44, 90, 120, 0.05);
+  box-shadow: 0 8px 32px rgba(44, 90, 120, 0.2);
+}
+
+.assetCheckbox {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 1;
+}
+
+.assetCheckbox input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: #2c5a78;
+  cursor: pointer;
+}
+
+.assetImage {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  background: rgba(248, 250, 252, 0.8);
+}
+
+.assetImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.assetPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: #c7a770;
+}
+
+.assetStatus {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+}
+
+.statusBadge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.assetContent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.assetHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.assetTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #102231;
+  margin: 0;
+  line-height: 1.3;
+  flex: 1;
+}
+
+.assetCategory {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.assetDescription {
+  color: #6b7280;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.assetMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.assetPrice {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c5a78;
+}
+
+.assetLocation,
+.assetDate {
+  font-size: 0.85rem;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ==============================================
+   LIST VIEW STYLES
+   ============================================== */
+
+.listView .assetCard {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  padding: 16px;
+}
+
+.listView .assetImage {
+  width: 120px;
+  height: 80px;
+  flex-shrink: 0;
+  margin-bottom: 0;
+}
+
+.listView .assetContent {
+  flex: 1;
+  gap: 8px;
+}
+
+.listView .assetHeader {
+  flex-direction: row;
+  align-items: center;
+}
+
+.listView .assetTitle {
+  font-size: 1.1rem;
+}
+
+.listView .assetMeta {
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+}
+
+.listView .assetPrice {
+  font-size: 1.25rem;
+}
+
+/* ==============================================
+   LOADING & EMPTY STATES
+   ============================================== */
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  gap: 24px;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #f3f4f6;
+  border-top: 4px solid #2c5a78;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loadingContainer p {
+  color: #6b7280;
+  margin: 0;
+  font-weight: 500;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(16, 34, 49, 0.1);
+}
+
+.emptyIcon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 24px;
+  color: #c7a770;
+}
+
+.emptyState h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #102231;
+  margin: 0 0 12px 0;
+}
+
+.emptyState p {
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ==============================================
+   RESPONSIVE DESIGN
+   ============================================== */
+
+@media (max-width: 768px) {
+  .assetLibrary {
+    padding: 16px;
+    gap: 20px;
+  }
+  
+  .libraryHeader {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  
+  .headerActions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .searchContainer {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .filtersPanel {
+    grid-template-columns: 1fr;
+  }
+  
+  .bulkActions {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  
+  .bulkButtons {
+    justify-content: center;
+  }
+  
+  .gridView {
+    grid-template-columns: 1fr;
+  }
+  
+  .listView .assetCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .listView .assetImage {
+    width: 100%;
+    height: 150px;
+  }
+  
+  .listView .assetMeta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .libraryTitle {
+    font-size: 1.5rem;
+  }
+  
+  .assetCard {
+    padding: 16px;
+  }
+  
+  .assetImage {
+    height: 150px;
+  }
+  
+  .assetTitle {
+    font-size: 1.1rem;
+  }
+  
+  .assetPrice {
+    font-size: 1.25rem;
+  }
+}
+
+/* ==============================================
+   ANIMATIONS
+   ============================================== */
+
+.assetCard {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.assetCard:nth-child(1) { animation-delay: 0.1s; }
+.assetCard:nth-child(2) { animation-delay: 0.2s; }
+.assetCard:nth-child(3) { animation-delay: 0.3s; }
+.assetCard:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==============================================
+   PREMIUM EFFECTS
+   ============================================== */
+
+.assetLibrary {
+  background: linear-gradient(135deg, rgba(248, 250, 252, 0.8) 0%, rgba(255, 255, 255, 0.9) 100%);
+}
+
+.libraryHeader,
+.searchSection {
+  backdrop-filter: blur(25px);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 
+    0 8px 32px rgba(16, 34, 49, 0.12),
+    0 2px 8px rgba(16, 34, 49, 0.06);
+}
+
+.assetCard {
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(16, 34, 49, 0.1),
+    0 2px 8px rgba(16, 34, 49, 0.05);
+}
+
+.assetCard:hover {
+  backdrop-filter: blur(25px);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 
+    0 16px 48px rgba(16, 34, 49, 0.15),
+    0 4px 16px rgba(16, 34, 49, 0.08);
+}

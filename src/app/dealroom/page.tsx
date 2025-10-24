@@ -1,9 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { Header } from "@/components/Header";
+import { DealDetailsModal } from "@/components/DealDetailsModal";
+import { PortfolioDashboard } from "@/components/PortfolioDashboard";
+import { QuickActionsToolbar } from "@/components/QuickActionsToolbar";
+import { MobileTouchHandler } from "@/components/MobileTouchHandler";
+import { UserRegistration } from "@/components/UserRegistration";
+import { RoleBasedNavigation } from "@/components/RoleBasedNavigation";
+import { FallbackDealroom } from "@/components/FallbackDealroom";
+import { PortfolioModal } from "@/components/PortfolioModal";
+import { DealModal } from "@/components/DealModal";
 import styles from "./dealroom.module.css";
 
 interface Portfolio {
@@ -39,7 +48,7 @@ interface AssetAllocation {
   actual_value: number;
 }
 
-export default function DealroomPage() {
+function DealroomContent() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
@@ -48,53 +57,143 @@ export default function DealroomPage() {
   const [loading, setLoading] = useState(true);
   const [selectedPortfolio, setSelectedPortfolio] = useState<string | null>(null);
   const [creatingSampleData, setCreatingSampleData] = useState(false);
+  const [selectedDealId, setSelectedDealId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showDashboard, setShowDashboard] = useState(false);
+  const [selectedPortfolioId, setSelectedPortfolioId] = useState<string | null>(null);
+  const [showRegistration, setShowRegistration] = useState(false);
+  const [showNavigation, setShowNavigation] = useState(false);
+  const [userRole, setUserRole] = useState<'buyer' | 'seller' | null>(null);
+  const [showFallback, setShowFallback] = useState(false);
+  const [showPortfolioModal, setShowPortfolioModal] = useState(false);
+  const [showDealModal, setShowDealModal] = useState(false);
 
   useEffect(() => {
+    // Set a timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      console.warn('Data loading timeout - forcing loading to stop');
+      setLoading(false);
+    }, 10000); // 10 second timeout
+
     async function loadDealroomData() {
       const supabase = getSupabaseBrowserClient();
       
       try {
-        const { data: auth } = await supabase.auth.getUser();
-        if (!auth.user) {
-          router.push("/sign-in");
+        console.log('Starting data load...');
+        
+        // Check if user is authenticated
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          console.log('No user found, showing registration');
+          setShowRegistration(true);
+          setLoading(false);
           return;
         }
         
-        setUser(auth.user);
+        console.log('User found:', user.id);
+        setUser(user);
         
-        // Get portfolios
-        const { data: portfoliosData } = await supabase
-          .from("portfolio_overview")
-          .select("*")
-          .order("updated_at", { ascending: false });
-        setPortfolios(portfoliosData || []);
+        // Load user role with error handling
+        try {
+          const { data: roleData, error: roleError } = await supabase
+            .from('user_roles')
+            .select('role_type')
+            .eq('user_id', user.id)
+            .eq('is_primary_role', true)
+            .single();
+          
+          if (roleError) {
+            console.warn('Error loading user role (table might not exist):', roleError);
+            // Set default role
+            setUserRole('buyer');
+          } else if (roleData) {
+            console.log('User role loaded:', roleData.role_type);
+            setUserRole(roleData.role_type);
+          }
+        } catch (roleError) {
+          console.warn('User roles table not found, using default role');
+          setUserRole('buyer');
+        }
         
-        // Get deals
-        const { data: dealsData } = await supabase
-          .from("deal_pipeline")
-          .select("*")
-          .order("expected_close_date", { ascending: true });
-        setDeals(dealsData || []);
-        
-        // Get asset allocations for first portfolio
-        if (portfoliosData && portfoliosData.length > 0) {
-          const { data: allocationsData } = await supabase
-            .from("asset_allocations")
+        // Get portfolios with error handling
+        try {
+          console.log('Loading portfolios...');
+          const { data: portfoliosData, error: portfoliosError } = await supabase
+            .from("portfolio_overview")
             .select("*")
-            .eq("portfolio_id", portfoliosData[0].id);
-          setAllocations(allocationsData || []);
-          setSelectedPortfolio(portfoliosData[0].id);
+            .order("updated_at", { ascending: false });
+          
+          if (portfoliosError) {
+            console.warn('Error loading portfolios:', portfoliosError);
+            setPortfolios([]);
+          } else if (portfoliosData) {
+            console.log('Loaded portfolios:', portfoliosData.length);
+            // Remove duplicates based on id
+            const uniquePortfolios = portfoliosData.filter((portfolio, index, self) => 
+              index === self.findIndex(p => p.id === portfolio.id)
+            );
+            console.log('Unique portfolios:', uniquePortfolios.length);
+            setPortfolios(uniquePortfolios);
+            
+            // Get asset allocations for first portfolio
+            if (uniquePortfolios.length > 0) {
+              try {
+                const { data: allocationsData } = await supabase
+                  .from("asset_allocations")
+                  .select("*")
+                  .eq("portfolio_id", uniquePortfolios[0].id);
+                setAllocations(allocationsData || []);
+                setSelectedPortfolio(uniquePortfolios[0].id);
+              } catch (allocError) {
+                console.warn('Error loading allocations:', allocError);
+                setAllocations([]);
+              }
+            }
+          }
+        } catch (portfoliosError) {
+          console.warn('Portfolios table not found, using empty array');
+          setPortfolios([]);
+        }
+        
+        // Get deals with error handling
+        try {
+          console.log('Loading deals...');
+          const { data: dealsData, error: dealsError } = await supabase
+            .from("deal_pipeline")
+            .select("*")
+            .order("expected_close_date", { ascending: true });
+          
+          if (dealsError) {
+            console.warn('Error loading deals:', dealsError);
+            setDeals([]);
+          } else if (dealsData) {
+            console.log('Loaded deals:', dealsData.length);
+            // Remove duplicates based on id
+            const uniqueDeals = dealsData.filter((deal, index, self) => 
+              index === self.findIndex(d => d.id === deal.id)
+            );
+            console.log('Unique deals:', uniqueDeals.length);
+            setDeals(uniqueDeals);
+          }
+        } catch (dealsError) {
+          console.warn('Deals table not found, using empty array');
+          setDeals([]);
         }
         
       } catch (error) {
-        console.warn("Error fetching dealroom data:", error);
+        console.error("Error fetching dealroom data:", error);
+        setShowFallback(true);
       } finally {
+        clearTimeout(timeoutId);
         setLoading(false);
       }
     }
 
     loadDealroomData();
-  }, [router]);
+    
+    // Cleanup timeout on unmount
+    return () => clearTimeout(timeoutId);
+  }, []); // Remove router dependency to prevent multiple loads
 
   const createSampleData = async () => {
     setCreatingSampleData(true);
@@ -117,6 +216,28 @@ export default function DealroomPage() {
     } finally {
       setCreatingSampleData(false);
     }
+  };
+
+  const handleCreatePortfolio = () => {
+    console.log('Opening portfolio modal...');
+    setShowPortfolioModal(true);
+  };
+
+  const handleCreateDeal = () => {
+    console.log('Opening deal modal...');
+    setShowDealModal(true);
+  };
+
+  const handlePortfolioCreated = (portfolio: any) => {
+    console.log('Portfolio created:', portfolio);
+    setPortfolios(prev => [portfolio, ...prev]);
+    setShowPortfolioModal(false);
+  };
+
+  const handleDealCreated = (deal: any) => {
+    console.log('Deal created:', deal);
+    setDeals(prev => [deal, ...prev]);
+    setShowDealModal(false);
   };
 
   const formatPrice = (value: number, currency: string) => {
@@ -163,6 +284,110 @@ export default function DealroomPage() {
     }
   };
 
+  const handleDealClick = (dealId: string) => {
+    setSelectedDealId(dealId);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedDealId(null);
+  };
+
+  const handlePortfolioClick = (portfolioId: string) => {
+    console.log('Portfolio clicked:', portfolioId);
+    if (!portfolioId) {
+      console.error('No portfolio ID provided');
+      return;
+    }
+    setSelectedPortfolioId(portfolioId);
+    setShowDashboard(true);
+  };
+
+  const handleBackToPortfolios = () => {
+    setShowDashboard(false);
+    setSelectedPortfolioId(null);
+  };
+
+  const handleSwipeLeft = () => {
+    // Navigate to next section or close modal
+    if (isModalOpen) {
+      handleCloseModal();
+    }
+  };
+
+  const handleSwipeRight = () => {
+    // Navigate to previous section
+    if (showDashboard) {
+      handleBackToPortfolios();
+    }
+  };
+
+  const handleSwipeUp = () => {
+    // Open quick actions
+    console.log('Swipe up - Open quick actions');
+  };
+
+  const handleSwipeDown = () => {
+    // Close any open modals or go back
+    if (isModalOpen) {
+      handleCloseModal();
+    } else if (showDashboard) {
+      handleBackToPortfolios();
+    }
+  };
+
+  const handleLongPress = () => {
+    // Open context menu or additional options
+    console.log('Long press - Open context menu');
+  };
+
+  const handleRegistrationComplete = (userData: any) => {
+    setShowRegistration(false);
+    setUserRole(userData.role);
+    setUser(userData.user);
+    // Reload the page to refresh data
+    window.location.reload();
+  };
+
+  const handleShowNavigation = () => {
+    setShowNavigation(!showNavigation);
+  };
+
+  const handleRetry = () => {
+    setShowFallback(false);
+    setLoading(true);
+    // Reload the page to retry
+    window.location.reload();
+  };
+
+  // Show registration modal if user is not authenticated
+  if (showRegistration) {
+    return (
+      <UserRegistration 
+        onRegistrationComplete={handleRegistrationComplete}
+        onClose={() => setShowRegistration(false)}
+      />
+    );
+  }
+
+  // Show role-based navigation if user wants to switch roles
+  if (showNavigation) {
+    return (
+      <RoleBasedNavigation 
+        onRoleChange={(role) => {
+          setUserRole(role.role);
+          setShowNavigation(false);
+        }}
+      />
+    );
+  }
+
+  // Show fallback if there's a critical error
+  if (showFallback) {
+    return <FallbackDealroom onRetry={handleRetry} />;
+  }
+
   if (loading) {
     return (
       <main>
@@ -175,21 +400,77 @@ export default function DealroomPage() {
     );
   }
 
-  return (
-    <main>
-      <Header />
-      
-      {/* Hero Section */}
-      <section className={styles.heroSection}>
-        <div className={styles.container}>
-          <div className={styles.heroContent}>
-            <h1 className={styles.heroTitle}>Dealroom</h1>
-            <p className={styles.heroSubtitle}>
-              Professionelle Investment-Management-Plattform für Luxus-Assets
-            </p>
+  if (showDashboard && selectedPortfolioId) {
+    return (
+      <MobileTouchHandler
+        onSwipeRight={handleSwipeRight}
+        onSwipeDown={handleSwipeDown}
+        onLongPress={handleLongPress}
+        className={styles.mobileContainer}
+      >
+        <main>
+          <Header />
+          <div className={styles.dashboardContainer}>
+            <div className={styles.dashboardHeader}>
+              <button className={styles.backButton} onClick={handleBackToPortfolios}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Zurück zu Portfolios
+              </button>
+              <h1 className={styles.dashboardTitle}>Portfolio Dashboard</h1>
+            </div>
+            <PortfolioDashboard 
+              portfolioId={selectedPortfolioId}
+              onPortfolioUpdate={(metrics) => {
+                console.log('Portfolio updated:', metrics);
+              }}
+            />
           </div>
-        </div>
-      </section>
+        </main>
+      </MobileTouchHandler>
+    );
+  }
+
+  return (
+    <MobileTouchHandler
+      onSwipeLeft={handleSwipeLeft}
+      onSwipeRight={handleSwipeRight}
+      onSwipeUp={handleSwipeUp}
+      onSwipeDown={handleSwipeDown}
+      onLongPress={handleLongPress}
+      className={styles.mobileContainer}
+    >
+      <main>
+        <Header />
+        
+        {/* Hero Section */}
+        <section className={styles.heroSection}>
+          <div className={styles.container}>
+            <div className={styles.heroContent}>
+              <h1 className={styles.heroTitle}>Dealroom</h1>
+              <p className={styles.heroSubtitle}>
+                Professionelle Investment-Management-Plattform für Luxus-Assets
+              </p>
+              {userRole && (
+                <div className={styles.roleIndicator}>
+                  <span className={styles.roleIcon}>
+                    {userRole === 'buyer' ? '🛒' : '🏪'}
+                  </span>
+                  <span className={styles.roleText}>
+                    {userRole === 'buyer' ? 'Käufer-Modus' : 'Verkäufer-Modus'}
+                  </span>
+                  <button 
+                    className={styles.roleSwitchButton}
+                    onClick={handleShowNavigation}
+                  >
+                    Rolle wechseln
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
 
       {/* Portfolio Overview */}
       <section className={styles.section}>
@@ -204,7 +485,10 @@ export default function DealroomPage() {
               >
                 {creatingSampleData ? 'Erstelle...' : '📊 Sample Data'}
               </button>
-              <button className={styles.btnPrimary}>
+              <button 
+                className={styles.btnPrimary}
+                onClick={handleCreatePortfolio}
+              >
                 + Neues Portfolio
               </button>
             </div>
@@ -238,7 +522,13 @@ export default function DealroomPage() {
                   </div>
 
                   <div className={styles.portfolioActions}>
-                    <button className={styles.btnSecondary}>Details</button>
+                    <button 
+                      className={styles.btnSecondary}
+                      onClick={() => handlePortfolioClick(portfolio.id)}
+                      disabled={!portfolio.id}
+                    >
+                      Dashboard
+                    </button>
                     <button className={styles.btnPrimary}>Bearbeiten</button>
                   </div>
                 </div>
@@ -264,7 +554,10 @@ export default function DealroomPage() {
         <div className={styles.container}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Deal Pipeline</h2>
-            <button className={styles.btnPrimary}>
+            <button 
+              className={styles.btnPrimary}
+              onClick={handleCreateDeal}
+            >
               + Neuer Deal
             </button>
           </div>
@@ -295,7 +588,12 @@ export default function DealroomPage() {
                   </div>
 
                   <div className={styles.dealActions}>
-                    <button className={styles.btnSecondary}>Details</button>
+                    <button 
+                      className={styles.btnSecondary}
+                      onClick={() => handleDealClick(deal.id)}
+                    >
+                      Details
+                    </button>
                     <button className={styles.btnPrimary}>Bearbeiten</button>
                   </div>
                 </div>
@@ -361,7 +659,44 @@ export default function DealroomPage() {
           </div>
         </section>
       )}
-    </main>
+
+      {/* Deal Details Modal */}
+      <DealDetailsModal
+        dealId={selectedDealId}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
+
+        {/* Quick Actions Toolbar */}
+        <QuickActionsToolbar
+          onAction={(actionId) => {
+            console.log('Quick action triggered:', actionId);
+          }}
+        />
+      </main>
+
+      {/* Modals */}
+      <PortfolioModal
+        isOpen={showPortfolioModal}
+        onClose={() => setShowPortfolioModal(false)}
+        onPortfolioCreated={handlePortfolioCreated}
+      />
+      
+      <DealModal
+        isOpen={showDealModal}
+        onClose={() => setShowDealModal(false)}
+        onDealCreated={handleDealCreated}
+      />
+    </MobileTouchHandler>
+  );
+}
+
+// Main export with Suspense wrapper
+export default function DealroomPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <DealroomContent />
+    </Suspense>
   );
 }
 

@@ -1,0 +1,576 @@
+/* STATUS WORKFLOW STYLES */
+/* Premium Status Management with Glassmorphism */
+
+/* ==============================================
+   STATUS WORKFLOW
+   ============================================== */
+
+.statusWorkflow {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(16, 34, 49, 0.08);
+}
+
+/* ==============================================
+   PROGRESS HEADER
+   ============================================== */
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(44, 90, 120, 0.1);
+}
+
+.progressInfo {
+  flex: 1;
+}
+
+.sectionTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #102231;
+  margin: 0 0 12px 0;
+}
+
+.progressStats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.currentStatus {
+  background: linear-gradient(135deg, #2c5a78 0%, #4a90a4 100%);
+  color: white;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.progressPercentage {
+  color: #6b7280;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.timeEstimate {
+  text-align: right;
+}
+
+.estimatedTime {
+  background: rgba(44, 90, 120, 0.1);
+  color: #2c5a78;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ==============================================
+   PROGRESS BAR
+   ============================================== */
+
+.progressBar {
+  width: 100%;
+  height: 8px;
+  background: rgba(44, 90, 120, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 32px;
+  position: relative;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(135deg, #2c5a78 0%, #c7a770 100%);
+  border-radius: 4px;
+  transition: width 0.6s ease;
+  position: relative;
+}
+
+.progressFill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ==============================================
+   STEPS CONTAINER
+   ============================================== */
+
+.stepsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.stepItem {
+  position: relative;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(16, 34, 49, 0.06);
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.stepItem:nth-child(2) { animation-delay: 0.1s; }
+.stepItem:nth-child(3) { animation-delay: 0.2s; }
+.stepItem:nth-child(4) { animation-delay: 0.3s; }
+.stepItem:nth-child(5) { animation-delay: 0.4s; }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stepActive {
+  border-color: #2c5a78;
+  box-shadow: 0 8px 32px rgba(44, 90, 120, 0.15);
+  transform: translateY(-2px);
+}
+
+.stepCompleted {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.stepNext {
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.05);
+}
+
+.stepInactive {
+  opacity: 0.6;
+}
+
+.stepContent {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+/* ==============================================
+   STEP ICON
+   ============================================== */
+
+.stepIcon {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.stepActive .stepIcon {
+  background: linear-gradient(135deg, #2c5a78 0%, #4a90a4 100%);
+  box-shadow: 0 8px 24px rgba(44, 90, 120, 0.3);
+}
+
+.stepCompleted .stepIcon {
+  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+}
+
+.stepNext .stepIcon {
+  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
+}
+
+.stepInactive .stepIcon {
+  background: rgba(107, 114, 128, 0.1);
+  color: #9ca3af;
+}
+
+.stepIconText {
+  font-size: 1.5rem;
+  color: white;
+  font-weight: 600;
+}
+
+.completedBadge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 20px;
+  height: 20px;
+  background: #10b981;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.completedBadge svg {
+  width: 12px;
+  height: 12px;
+  color: white;
+}
+
+/* ==============================================
+   STEP INFO
+   ============================================== */
+
+.stepInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.stepName {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #102231;
+  margin: 0 0 8px 0;
+}
+
+.stepDescription {
+  color: #6b7280;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0 0 16px 0;
+}
+
+.stepRequirements {
+  margin-bottom: 16px;
+}
+
+.requirementsLabel {
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.requirementsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.requirementItem {
+  background: rgba(44, 90, 120, 0.1);
+  color: #2c5a78;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.stepTimeline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.timelineIcon {
+  font-size: 0.9rem;
+}
+
+.timelineText {
+  font-weight: 500;
+}
+
+/* ==============================================
+   STEP ACTIONS
+   ============================================== */
+
+.stepActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.transitionButton {
+  background: linear-gradient(135deg, #2c5a78 0%, #4a90a4 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(44, 90, 120, 0.3);
+}
+
+.transitionButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(44, 90, 120, 0.4);
+}
+
+.transitionButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.currentBadge,
+.completedBadge {
+  background: rgba(44, 90, 120, 0.1);
+  color: #2c5a78;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.completedBadge {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+/* ==============================================
+   STEP CONNECTOR
+   ============================================== */
+
+.stepConnector {
+  position: absolute;
+  left: 47px;
+  top: 72px;
+  width: 2px;
+  height: 24px;
+  z-index: 1;
+}
+
+.connectorLine {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #2c5a78 0%, rgba(44, 90, 120, 0.3) 100%);
+  border-radius: 1px;
+}
+
+/* ==============================================
+   QUICK ACTIONS
+   ============================================== */
+
+.quickActions {
+  background: rgba(248, 250, 252, 0.5);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid rgba(44, 90, 120, 0.1);
+}
+
+.actionsTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #102231;
+  margin: 0 0 16px 0;
+}
+
+.actionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.actionButton {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(44, 90, 120, 0.1);
+  border-radius: 8px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+
+.actionButton:hover:not(:disabled) {
+  background: rgba(44, 90, 120, 0.05);
+  border-color: #2c5a78;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(44, 90, 120, 0.1);
+}
+
+.actionButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.actionIcon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.actionLabel {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #102231;
+}
+
+/* ==============================================
+   RESPONSIVE DESIGN
+   ============================================== */
+
+@media (max-width: 768px) {
+  .statusWorkflow {
+    padding: 20px;
+  }
+  
+  .progressHeader {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  
+  .progressStats {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  
+  .stepContent {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .stepIcon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .stepIconText {
+    font-size: 1.2rem;
+  }
+  
+  .stepConnector {
+    left: 39px;
+    top: 64px;
+  }
+  
+  .actionsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .actionButton {
+    padding: 10px 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .statusWorkflow {
+    padding: 16px;
+  }
+  
+  .sectionTitle {
+    font-size: 1.25rem;
+  }
+  
+  .stepItem {
+    padding: 20px;
+  }
+  
+  .stepName {
+    font-size: 1.1rem;
+  }
+  
+  .stepDescription {
+    font-size: 0.9rem;
+  }
+  
+  .requirementsList {
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .requirementItem {
+    font-size: 0.75rem;
+    padding: 3px 10px;
+  }
+  
+  .stepActions {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+  
+  .transitionButton {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+  }
+}
+
+/* ==============================================
+   PREMIUM EFFECTS
+   ============================================== */
+
+.statusWorkflow {
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(16, 34, 49, 0.1),
+    0 2px 8px rgba(16, 34, 49, 0.05);
+}
+
+.stepItem {
+  backdrop-filter: blur(15px);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 
+    0 4px 16px rgba(16, 34, 49, 0.08),
+    0 1px 4px rgba(16, 34, 49, 0.04);
+}
+
+.stepItem:hover {
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 
+    0 8px 32px rgba(16, 34, 49, 0.12),
+    0 4px 16px rgba(16, 34, 49, 0.08);
+}
+
+.quickActions {
+  backdrop-filter: blur(10px);
+  background: rgba(248, 250, 252, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
