@@ -1,6 +1,7 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
+import { getBaseUrl } from '@/lib/utils/url'
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
@@ -12,9 +13,7 @@ export async function GET(request: NextRequest) {
   }
 
   // Redirect to dashboard after successful email confirmation
-  const isLocalhost = requestUrl.hostname === 'localhost'
-  const redirectUrl = isLocalhost 
-    ? `${requestUrl.origin}/dashboard`
-    : 'https://assero.io/dashboard'
+  const baseUrl = getBaseUrl()
+  const redirectUrl = `${baseUrl}/dashboard`
   return NextResponse.redirect(redirectUrl)
 }

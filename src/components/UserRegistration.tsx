@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { getAuthCallbackUrl } from "@/lib/utils/url";
 import styles from "./UserRegistration.module.css";
 
 interface RegistrationData {
@@ -115,9 +116,7 @@ export function UserRegistration({ onRegistrationComplete, onClose }: UserRegist
         email: formData.email,
         password: formData.password,
         options: {
-          emailRedirectTo: window.location.hostname === 'localhost' 
-            ? `${window.location.origin}/auth/callback`
-            : 'https://assero.io/auth/callback',
+          emailRedirectTo: getAuthCallbackUrl(),
           data: {
             first_name: formData.firstName,
             last_name: formData.lastName,
