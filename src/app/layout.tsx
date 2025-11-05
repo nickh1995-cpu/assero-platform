@@ -1,24 +1,25 @@
 import type { Metadata } from "next";
-import { Montserrat, Playfair_Display } from "next/font/google";
+// import { Montserrat, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import "./landing.css";
 import "./premium-listing.css";
 import { ErrorBoundary, ErrorFallback } from "@/components/ErrorBoundary";
 import { DebugInfo } from "@/components/DebugInfo";
 
-const montserrat = Montserrat({
-  variable: "--font-montserrat",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  display: "swap",
-});
+// Using system fonts as fallback due to network restrictions
+// const montserrat = Montserrat({
+//   variable: "--font-montserrat",
+//   subsets: ["latin"],
+//   weight: ["300", "400", "500", "600", "700"],
+//   display: "swap",
+// });
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
+// const playfair = Playfair_Display({
+//   variable: "--font-playfair",
+//   subsets: ["latin"],
+//   weight: ["400", "500", "600", "700"],
+//   display: "swap",
+// });
 
 export const metadata: Metadata = {
   title: "ASSERO – Multi‑Asset Plattform",
@@ -73,7 +74,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="de">
-      <body className={`${montserrat.variable} ${playfair.variable} antialiased`}>
+      <body className="antialiased">
         <ErrorBoundary fallback={ErrorFallback}>
           {children}
           <DebugInfo />
