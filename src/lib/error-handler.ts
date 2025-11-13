@@ -67,7 +67,7 @@ export function safeGetImageSrc(asset: any): string | null {
     if (title.includes("penthouse") || title.includes("gendarmenmarkt")) {
       return "/images/assets/penthouse-NEW.jpg";
     } else if (title.includes("porsche") || title.includes("911")) {
-      return "/images/assets/porsche-911-NEW.jpg";
+      return "/images/assets/100900_Marco-Porsche-992-Turbo-S_6_klein.webp";
     } else if (title.includes("rolex") || title.includes("submariner")) {
       return "/images/assets/rolex-submariner-NEW.jpg";
     } else if (title.includes("eigentum") || title.includes("neubau")) {

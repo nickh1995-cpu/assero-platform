@@ -143,7 +143,7 @@ export default async function AssetDetailPage({ params }: { params: Promise<{ id
       property_type: "fahrzeuge",
       condition: "excellent",
       images: [
-        { url: "/images/assets/porsche-911-NEW.jpg", type: "main", is_primary: true }
+        { url: "/images/assets/100900_Marco-Porsche-992-Turbo-S_6_klein.webp", type: "main", is_primary: true }
       ],
       metadata: {
         brand: "Porsche",
@@ -318,7 +318,7 @@ export default async function AssetDetailPage({ params }: { params: Promise<{ id
       property_type: "fahrzeuge",
       condition: "excellent",
       images: [
-        { url: "/images/assets/porsche-911-NEW.jpg", type: "main", is_primary: true }
+        { url: "/images/assets/100900_Marco-Porsche-992-Turbo-S_6_klein.webp", type: "main", is_primary: true }
       ],
       metadata: {
         brand: "Ferrari",
@@ -432,7 +432,7 @@ export default async function AssetDetailPage({ params }: { params: Promise<{ id
     if (asset.title?.toLowerCase().includes("penthouse") || asset.title?.toLowerCase().includes("gendarmenmarkt")) {
       return "/images/assets/penthouse-NEW.jpg";
     } else if (asset.title?.toLowerCase().includes("porsche") || asset.title?.toLowerCase().includes("911")) {
-      return "/images/assets/porsche-911-NEW.jpg";
+      return "/images/assets/100900_Marco-Porsche-992-Turbo-S_6_klein.webp";
     } else if (asset.title?.toLowerCase().includes("rolex") || asset.title?.toLowerCase().includes("submariner")) {
       return "/images/assets/rolex-submariner-NEW.jpg";
     } else if (asset.title?.toLowerCase().includes("eigentum") || asset.title?.toLowerCase().includes("neubau")) {

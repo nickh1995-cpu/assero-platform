@@ -191,7 +191,7 @@ export function FeaturedGrid() {
               <div className="featured-image-wrap">
                 <div className="featured-image">
                   <img 
-                    src="./images/assets/porsche-911-NEW.jpg"
+                    src="./images/assets/100900_Marco-Porsche-992-Turbo-S_6_klein.webp"
                     alt="Premium Fahrzeuge"
                     className="featured-photo"
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -260,7 +260,7 @@ export function FeaturedGrid() {
             if (asset.title?.toLowerCase().includes("penthouse") || asset.title?.toLowerCase().includes("gendarmenmarkt") || asset.id === "1" || asset.id === "9c65a2bf-7c34-4aa9-bc74-b862c5634d63") {
               imageSrc = `./images/assets/penthouse-NEW.jpg`;
             } else if (asset.title?.toLowerCase().includes("porsche") || asset.title?.toLowerCase().includes("911") || asset.id === "3" || asset.id === "f2986a41-6c6f-4445-ba66-42aaeb125360") {
-              imageSrc = `./images/assets/porsche-911-NEW.jpg`;
+              imageSrc = `./images/assets/100900_Marco-Porsche-992-Turbo-S_6_klein.webp`;
             } else if (asset.title?.toLowerCase().includes("rolex") || asset.title?.toLowerCase().includes("submariner") || asset.id === "2" || asset.id === "7ab232ca-70ba-4954-aad7-7ee784d970e9") {
               imageSrc = `./images/assets/rolex-submariner-NEW.jpg`;
             } else if (asset.title?.toLowerCase().includes("eigentum") || asset.title?.toLowerCase().includes("eigentumswohnung") || asset.title?.toLowerCase().includes("neubau") || asset.id === "d11c91eb-b793-4fca-bb0a-995189c5cde7") {
@@ -274,7 +274,7 @@ export function FeaturedGrid() {
             } else if (asset.id === "374e40a8-2ad0-4d88-b544-0c43dab9976e") {
               imageSrc = `./images/assets/penthouse-NEW.jpg`;
             } else if (asset.id === "77092888-10d6-43f6-a877-b5d7ee044e56") {
-              imageSrc = `./images/assets/porsche-911-NEW.jpg`;
+              imageSrc = `./images/assets/100900_Marco-Porsche-992-Turbo-S_6_klein.webp`;
             } else if (asset.id === "acf995f4-22af-47bc-a07c-a9366632c952") {
               imageSrc = `./images/assets/rolex-submariner-NEW.jpg`;
             } else if (asset.metadata?.image && !asset.metadata.image.includes("/api/image-proxy")) {
@@ -287,7 +287,7 @@ export function FeaturedGrid() {
               } else if (categorySlug === "luxusuhren") {
                 imageSrc = "./images/assets/rolex-submariner-NEW.jpg";
               } else if (categorySlug === "fahrzeuge") {
-                imageSrc = "./images/assets/porsche-911-NEW.jpg";
+                imageSrc = "./images/assets/100900_Marco-Porsche-992-Turbo-S_6_klein.webp";
               } else {
                 imageSrc = "./images/assets/penthouse-NEW.jpg";
               }
