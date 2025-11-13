@@ -1,0 +1,182 @@
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  color: #2c5a78;
+}
+
+.icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #102231;
+  margin-bottom: 16px;
+  font-family: var(--font-playfair, serif);
+}
+
+.content {
+  text-align: left;
+}
+
+.description {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 32px;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border-left: 4px solid #2c5a78;
+}
+
+.stepNumber {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  background: #2c5a78;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.stepContent h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #102231;
+  margin-bottom: 4px;
+}
+
+.stepContent p {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+}
+
+.message {
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.message.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.message.info {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.btnPrimary,
+.btnSecondary {
+  width: 100%;
+  padding: 14px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.btnPrimary {
+  background: #2c5a78;
+  color: white;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  background: #214357;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(44, 90, 120, 0.3);
+}
+
+.btnPrimary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btnSecondary {
+  background: white;
+  color: #2c5a78;
+  border: 2px solid #2c5a78;
+}
+
+.btnSecondary:hover:not(:disabled) {
+  background: #f8f9fa;
+}
+
+.btnSecondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.hint {
+  padding: 16px;
+  background: #e7f3ff;
+  border-radius: 8px;
+  border-left: 4px solid #2c5a78;
+  font-size: 14px;
+  color: #214357;
+  line-height: 1.6;
+}
+
+.hint strong {
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 32px 16px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .step {
+    padding: 16px;
+  }
+}
+

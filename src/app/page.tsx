@@ -3,10 +3,24 @@
 import { Header } from "@/components/Header";
 import { FeaturedGridWrapper } from "@/components/FeaturedGridWrapper";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 
-export default function Home() {
+function HomeContent() {
+  const searchParams = useSearchParams();
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  
   useEffect(() => {
+    // Check if user just verified email
+    const verified = searchParams?.get('verified');
+    if (verified === 'true') {
+      setShowSuccessMessage(true);
+      // Remove query param from URL
+      window.history.replaceState({}, '', '/');
+      // Hide message after 5 seconds
+      setTimeout(() => setShowSuccessMessage(false), 5000);
+    }
+    
     // FAQ Toggle Functionality
     const faqQuestions = document.querySelectorAll('.faq-question');
     
@@ -47,11 +61,37 @@ export default function Home() {
     <main>
       {/* Header */}
       <Header />
+      
+      {/* Success Message after Email Verification */}
+      {showSuccessMessage && (
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: '#10b981',
+          color: 'white',
+          padding: '20px 32px',
+          borderRadius: '12px',
+          boxShadow: '0 8px 24px rgba(16, 185, 129, 0.3)',
+          zIndex: 10000,
+          maxWidth: '90%',
+          textAlign: 'center',
+          animation: 'slideDown 0.3s ease-out'
+        }}>
+          <strong style={{ fontSize: '18px', display: 'block', marginBottom: '8px' }}>
+            ✅ Registrierung abgeschlossen!
+          </strong>
+          <p style={{ margin: 0, fontSize: '16px' }}>
+            Ihre E-Mail wurde erfolgreich verifiziert. Sie sind jetzt angemeldet.
+          </p>
+        </div>
+      )}
 
       {/* Hero */}
       <section id="home" className="section hero" aria-label="Hero">
         <div className="video-wrap" aria-hidden="true">
-          <video id="hero-video" playsInline autoPlay muted loop preload="auto" tabIndex={-1}>
+          <video id="hero-video" playsInline autoPlay muted loop tabIndex={-1}>
             <source src="/assets/hero.mp4" type="video/mp4" />
           </video>
           <div className="hero-fog"></div>
@@ -444,5 +484,13 @@ export default function Home() {
         </div>
       </footer>
     </main>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HomeContent />
+    </Suspense>
   );
 }

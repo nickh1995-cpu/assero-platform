@@ -11,7 +11,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 1400; /* DealModal priority */
   padding: 20px;
 }
 
@@ -24,6 +24,18 @@
   max-height: 90vh;
   overflow-y: auto;
   animation: modalSlideIn 0.3s ease-out;
+  position: relative;
+  z-index: 1401; /* Above overlay */
+  /* Allow text selection and copying */
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+}
+
+.modalContent * {
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 @keyframes modalSlideIn {
@@ -51,6 +63,9 @@
   font-weight: 700;
   color: #1f2937;
   margin: 0;
+  /* Prevent selection on title only */
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .closeButton {
@@ -152,6 +167,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(44, 90, 120, 0.3);
+  /* Keep user-select none for buttons - prevents accidental selection */
   user-select: none;
 }
 

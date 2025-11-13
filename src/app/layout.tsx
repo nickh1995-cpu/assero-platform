@@ -1,16 +1,19 @@
 import type { Metadata } from "next";
 import { Montserrat, Playfair_Display } from "next/font/google";
+import { ErrorBoundary, ErrorFallback } from "@/components/ErrorBoundary";
+import { DebugInfo } from "@/components/DebugInfo";
+import { Providers } from "./providers";
 import "./globals.css";
 import "./landing.css";
 import "./premium-listing.css";
-import { ErrorBoundary, ErrorFallback } from "@/components/ErrorBoundary";
-import { DebugInfo } from "@/components/DebugInfo";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   display: "swap",
+  preload: false,
+  adjustFontFallback: false,
 });
 
 const playfair = Playfair_Display({
@@ -18,6 +21,8 @@ const playfair = Playfair_Display({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
+  preload: false,
+  adjustFontFallback: false,
 });
 
 export const metadata: Metadata = {
@@ -74,10 +79,12 @@ export default function RootLayout({
   return (
     <html lang="de">
       <body className={`${montserrat.variable} ${playfair.variable} antialiased`}>
-        <ErrorBoundary fallback={ErrorFallback}>
-          {children}
-          <DebugInfo />
-        </ErrorBoundary>
+        <Providers>
+          <ErrorBoundary fallback={ErrorFallback}>
+            {children}
+            <DebugInfo />
+          </ErrorBoundary>
+        </Providers>
       </body>
     </html>
   );

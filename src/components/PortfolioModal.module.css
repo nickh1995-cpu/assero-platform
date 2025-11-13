@@ -11,7 +11,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 1300; /* PortfolioModal priority */
   padding: 20px;
 }
 
@@ -24,6 +24,8 @@
   max-height: 90vh;
   overflow-y: auto;
   animation: modalSlideIn 0.3s ease-out;
+  position: relative;
+  z-index: 1301; /* Above overlay */
 }
 
 @keyframes modalSlideIn {

@@ -1,0 +1,463 @@
+/**
+ * ASSERO CATEGORY SELECTION STEP - Premium Styles
+ * Phase 2.2: Professional Category Cards with Animations
+ */
+
+/* ==============================================
+   CONTAINER
+   ============================================== */
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.container:focus {
+  outline: none;
+}
+
+/* ==============================================
+   HEADER
+   ============================================== */
+
+.header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  font-size: 1.125rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* ==============================================
+   CATEGORY GRID
+   ============================================== */
+
+.categoryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+/* ==============================================
+   CATEGORY CARD
+   ============================================== */
+
+.categoryCard {
+  position: relative;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 32px 24px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  backdrop-filter: blur(10px);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  min-height: 240px;
+}
+
+.categoryCard:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0 12px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.categoryCard:active {
+  transform: translateY(-2px);
+}
+
+/* Selected State */
+.categoryCard.selected {
+  background: linear-gradient(135deg, #2c5a78, #3d7a9f);
+  border-color: #4a8bb8;
+  box-shadow: 
+    0 12px 40px rgba(44, 90, 120, 0.5),
+    0 0 24px rgba(44, 90, 120, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.categoryCard.selected:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 16px 48px rgba(44, 90, 120, 0.6),
+    0 0 32px rgba(44, 90, 120, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Focused State (Keyboard Navigation) */
+.categoryCard.focused {
+  outline: 3px solid #4a8bb8;
+  outline-offset: 4px;
+}
+
+/* ==============================================
+   CATEGORY ICON
+   ============================================== */
+
+.categoryIcon {
+  font-size: 4rem;
+  line-height: 1;
+  transition: transform 0.3s ease;
+}
+
+.categoryCard:hover .categoryIcon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.categoryCard.selected .categoryIcon {
+  transform: scale(1.15);
+  filter: drop-shadow(0 4px 12px rgba(255, 255, 255, 0.3));
+}
+
+/* ==============================================
+   CATEGORY CONTENT
+   ============================================== */
+
+.categoryContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.categoryName {
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+.categoryCard.selected .categoryName {
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.categoryDescription {
+  font-size: 0.9375rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+.categoryCard:hover .categoryDescription {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.categoryCard.selected .categoryDescription {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* ==============================================
+   SELECTED BADGE
+   ============================================== */
+
+.selectedBadge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 6px 16px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  animation: slideInUp 0.3s ease-out;
+}
+
+.checkmark {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* ==============================================
+   VALIDATION ERROR
+   ============================================== */
+
+.validationError {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 24px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 12px;
+  color: #ef4444;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  margin-bottom: 24px;
+  animation: shake 0.5s ease-out;
+}
+
+.validationError .errorIcon {
+  font-size: 1.25rem;
+}
+
+/* ==============================================
+   KEYBOARD HINT
+   ============================================== */
+
+.keyboardHint {
+  text-align: center;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.5);
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ==============================================
+   LOADING STATE
+   ============================================== */
+
+.loadingState {
+  text-align: center;
+  padding: 80px 20px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 24px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #4a8bb8;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loadingState p {
+  font-size: 1.125rem;
+  margin: 0;
+}
+
+/* ==============================================
+   ERROR STATE
+   ============================================== */
+
+.errorState {
+  text-align: center;
+  padding: 60px 20px;
+  background: rgba(239, 68, 68, 0.05);
+  border: 2px solid rgba(239, 68, 68, 0.2);
+  border-radius: 20px;
+}
+
+.errorState .errorIcon {
+  font-size: 4rem;
+  margin-bottom: 24px;
+  filter: grayscale(20%);
+}
+
+.errorState h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #ef4444;
+  margin-bottom: 12px;
+}
+
+.errorState p {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.retryButton {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #2c5a78, #3d7a9f);
+  color: #ffffff;
+  border: 1px solid #4a8bb8;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 
+    0 4px 16px rgba(44, 90, 120, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.retryButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 24px rgba(44, 90, 120, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* ==============================================
+   EMPTY STATE
+   ============================================== */
+
+.emptyState {
+  text-align: center;
+  padding: 60px 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+}
+
+.emptyState .emptyIcon {
+  font-size: 4rem;
+  margin-bottom: 24px;
+  opacity: 0.5;
+}
+
+.emptyState h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 12px;
+}
+
+.emptyState p {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.6;
+}
+
+/* ==============================================
+   ANIMATIONS
+   ============================================== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-4px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(4px);
+  }
+}
+
+/* ==============================================
+   RESPONSIVE
+   ============================================== */
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 1.75rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .categoryGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .categoryCard {
+    padding: 24px 20px;
+    min-height: 200px;
+  }
+
+  .categoryIcon {
+    font-size: 3rem;
+  }
+
+  .categoryName {
+    font-size: 1.25rem;
+  }
+
+  .categoryDescription {
+    font-size: 0.875rem;
+  }
+
+  .keyboardHint {
+    font-size: 0.8125rem;
+    padding: 10px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    margin-bottom: 32px;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .categoryCard {
+    padding: 20px 16px;
+    min-height: 180px;
+    gap: 16px;
+  }
+
+  .categoryIcon {
+    font-size: 2.5rem;
+  }
+
+  .categoryName {
+    font-size: 1.125rem;
+  }
+
+  .selectedBadge {
+    font-size: 0.8125rem;
+    padding: 5px 12px;
+  }
+}
+

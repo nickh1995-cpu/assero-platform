@@ -53,10 +53,7 @@
    TOUCH FEEDBACK
    ============================================== */
 
-.touchHandler:active {
-  transform: scale(0.98);
-  transition: transform 0.1s ease;
-}
+/* REMOVED: .touchHandler:active scale(0.98) - caused unwanted zoom effect on entire page */
 
 /* ==============================================
    SWIPE INDICATORS
@@ -263,9 +260,7 @@
   transition: backdrop-filter 0.3s ease;
 }
 
-.touchHandler:active {
-  backdrop-filter: blur(2px);
-}
+/* REMOVED: .touchHandler:active blur effect - caused visual distortion */
 
 .longPressIndicator {
   backdrop-filter: blur(10px);

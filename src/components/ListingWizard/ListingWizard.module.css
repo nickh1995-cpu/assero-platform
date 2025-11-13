@@ -1,0 +1,486 @@
+/**
+ * ASSERO LISTING WIZARD - Premium UI Styles
+ * Phase 2: Multi-Step Wizard Container
+ * 
+ * CI-konform, Ultra-Premium Design, Production-Ready
+ */
+
+/* ==============================================
+   WIZARD CONTAINER
+   ============================================== */
+
+.wizardContainer {
+  width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(
+    135deg,
+    #0a1628 0%,
+    #1a2942 50%,
+    #0f1d33 100%
+  );
+  padding: 40px 20px 80px;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Premium background pattern */
+.wizardContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(44, 90, 120, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(44, 90, 120, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Inner wrapper */
+.wizardInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* ==============================================
+   WIZARD HEADER
+   ============================================== */
+
+.wizardHeader {
+  text-align: center;
+  margin-bottom: 60px;
+  animation: fadeInDown 0.6s ease-out;
+}
+
+.wizardTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+
+.wizardSubtitle {
+  font-size: 1.125rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* ==============================================
+   PROGRESS INDICATOR
+   ============================================== */
+
+.progressContainer {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 32px 40px;
+  margin-bottom: 40px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  animation: fadeIn 0.6s ease-out 0.2s both;
+}
+
+.progressSteps {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  gap: 16px;
+}
+
+/* Progress line (background) */
+.progressSteps::before {
+  content: '';
+  position: absolute;
+  top: 24px;
+  left: 60px;
+  right: 60px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: 0;
+}
+
+/* Progress line (active) */
+.progressLine {
+  position: absolute;
+  top: 24px;
+  left: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #2c5a78, #3d7a9f);
+  z-index: 1;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 12px rgba(44, 90, 120, 0.6);
+}
+
+/* Step Item */
+.stepItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+
+/* Step Circle */
+.stepCircle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.125rem;
+  margin-bottom: 12px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Step Circle - Default (upcoming) */
+.stepCircle {
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Step Circle - Active */
+.stepItem.active .stepCircle {
+  background: linear-gradient(135deg, #2c5a78, #3d7a9f);
+  border: 2px solid #4a8bb8;
+  color: #ffffff;
+  box-shadow: 
+    0 8px 24px rgba(44, 90, 120, 0.5),
+    0 0 20px rgba(44, 90, 120, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: scale(1.15);
+}
+
+/* Step Circle - Completed */
+.stepItem.completed .stepCircle {
+  background: linear-gradient(135deg, #10b981, #059669);
+  border: 2px solid #34d399;
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+}
+
+/* Checkmark icon for completed */
+.stepItem.completed .stepCircle::after {
+  content: '✓';
+  position: absolute;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.stepItem.completed .stepCircle span {
+  display: none;
+}
+
+/* Step Label */
+.stepLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  transition: all 0.3s ease;
+  max-width: 120px;
+}
+
+.stepItem.active .stepLabel {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.stepItem.completed .stepLabel {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ==============================================
+   WIZARD CONTENT (STEP BODY)
+   ============================================== */
+
+.wizardContent {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 24px;
+  padding: 48px;
+  margin-bottom: 32px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0 12px 48px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  min-height: 500px;
+  animation: fadeInUp 0.6s ease-out 0.4s both;
+}
+
+/* ==============================================
+   WIZARD NAVIGATION (FOOTER)
+   ============================================== */
+
+.wizardNavigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  animation: fadeIn 0.6s ease-out 0.6s both;
+}
+
+.navLeft,
+.navRight {
+  display: flex;
+  gap: 12px;
+}
+
+/* Auto-Save Indicator */
+.autoSaveIndicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
+}
+
+.autoSaveIndicator.saving {
+  color: #f59e0b;
+  border-color: rgba(245, 158, 11, 0.3);
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.autoSaveIndicator.saved {
+  color: #10b981;
+  border-color: rgba(16, 185, 129, 0.3);
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.saveIcon {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+}
+
+.saveIcon.spinning {
+  animation: spin 1s linear infinite;
+}
+
+/* Navigation Buttons */
+.btnSecondary,
+.btnPrimary,
+.btnDanger {
+  padding: 14px 32px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.btnSecondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.btnSecondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.btnPrimary {
+  background: linear-gradient(135deg, #2c5a78, #3d7a9f);
+  color: #ffffff;
+  border: 1px solid #4a8bb8;
+  box-shadow: 
+    0 4px 16px rgba(44, 90, 120, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btnPrimary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 32px rgba(44, 90, 120, 0.5),
+    0 0 20px rgba(44, 90, 120, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btnDanger {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.btnDanger:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
+}
+
+.btnSecondary:disabled,
+.btnPrimary:disabled,
+.btnDanger:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ==============================================
+   ANIMATIONS
+   ============================================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==============================================
+   RESPONSIVE
+   ============================================== */
+
+@media (max-width: 768px) {
+  .wizardContainer {
+    padding: 24px 16px 60px;
+  }
+
+  .wizardTitle {
+    font-size: 1.875rem;
+  }
+
+  .wizardSubtitle {
+    font-size: 1rem;
+  }
+
+  .progressContainer {
+    padding: 24px 20px;
+  }
+
+  .progressSteps::before {
+    left: 40px;
+    right: 40px;
+  }
+
+  .progressLine {
+    left: 40px;
+  }
+
+  .stepCircle {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  .stepLabel {
+    font-size: 0.75rem;
+    max-width: 80px;
+  }
+
+  .wizardContent {
+    padding: 32px 24px;
+    min-height: 400px;
+  }
+
+  .wizardNavigation {
+    flex-direction: column-reverse;
+    gap: 16px;
+  }
+
+  .navLeft,
+  .navRight {
+    width: 100%;
+  }
+
+  .navRight {
+    flex-direction: column;
+  }
+
+  .btnSecondary,
+  .btnPrimary,
+  .btnDanger {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .autoSaveIndicator {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .wizardTitle {
+    font-size: 1.5rem;
+  }
+
+  .stepLabel {
+    font-size: 0.625rem;
+    max-width: 60px;
+  }
+
+  .stepCircle {
+    width: 36px;
+    height: 36px;
+    font-size: 0.875rem;
+  }
+
+  .wizardContent {
+    padding: 24px 16px;
+  }
+}
+

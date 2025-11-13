@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import ProgressStepper from "@/components/ProgressStepper";
 import CompCard from "@/components/CompCard";
 import PriceDistribution from "@/components/PriceDistribution";
@@ -11,6 +12,7 @@ import NaturalLanguageInput from "@/components/NaturalLanguageInput";
 import SmartSuggestions from "@/components/SmartSuggestions";
 import RiskWarnings from "@/components/RiskWarnings";
 import { Header } from "@/components/Header";
+import { useAuth } from "@/contexts/AuthContext";
 import { detectLocationTier, getLocationSuggestions } from "@/lib/location-data";
 import styles from "./valuation.module.css";
 
@@ -52,6 +54,8 @@ const WIZARD_STEPS = [
 ];
 
 export default function ValuationPage() {
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const [currentStep, setCurrentStep] = useState<WizardStep>(1);
   const [selectedAsset, setSelectedAsset] = useState<AssetType | null>(null);
   
@@ -193,6 +197,31 @@ export default function ValuationPage() {
 
   // Check if can proceed to next step
   const [missingFieldsError, setMissingFieldsError] = useState("");
+
+  useEffect(() => {
+    if (authLoading) return;
+    if (!user) {
+      router.push('/sign-in?redirect_to=/valuation');
+    }
+  }, [authLoading, user, router]);
+
+  if (authLoading || !user) {
+    return (
+      <main>
+        <Header />
+        <div style={{ minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", padding: "40px 20px", textAlign: "center" }}>
+          <div style={{ fontSize: "1.5rem", fontWeight: 600, marginBottom: "12px" }}>
+            {authLoading ? "Authentifizierung wird geladen ..." : "Anmeldung erforderlich"}
+          </div>
+          {!authLoading && (
+            <p style={{ maxWidth: "420px", color: "rgba(255,255,255,0.75)", lineHeight: 1.6 }}>
+              Bitte melden Sie sich an, um den Bewertungsassistenten zu nutzen. Ihre letzten Bewertungen stehen Ihnen danach wieder vollständig zur Verfügung.
+            </p>
+          )}
+        </div>
+      </main>
+    );
+  }
 
   const canProceedToNextStep = () => {
     if (currentStep === 2 && selectedAsset === "real-estate") {

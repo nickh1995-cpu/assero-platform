@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { createPortal } from "react-dom";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { DocumentManager } from "./DocumentManager";
 import { CommunicationHub } from "./CommunicationHub";
@@ -45,10 +46,81 @@ export function DealDetailsModal({ dealId, isOpen, onClose }: DealDetailsModalPr
     notes: ''
   });
 
+  const [mounted, setMounted] = useState(false);
+  const portalRootRef = useRef<HTMLDivElement | null>(null);
+  const previousBodyStylesRef = useRef<{ overflow: string; position: string; top: string }>({
+    overflow: '',
+    position: '',
+    top: '',
+  });
+  const scrollPositionRef = useRef(0);
+
+  // Create a dedicated portal root on first mount (client-side only)
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const portalRoot = document.createElement("div");
+    portalRoot.setAttribute("data-modal-root", "deal-details");
+    document.body.appendChild(portalRoot);
+    portalRootRef.current = portalRoot;
+    setMounted(true);
+
+    return () => {
+      if (portalRootRef.current) {
+        document.body.removeChild(portalRootRef.current);
+        portalRootRef.current = null;
+      }
+    };
+  }, []);
+
+  // Lock body scroll & trap focus when modal is open
+  useEffect(() => {
+    if (!isOpen || typeof document === "undefined") {
+      return;
+    }
+
+    const body = document.body;
+    previousBodyStylesRef.current = {
+      overflow: body.style.overflow,
+      position: body.style.position,
+      top: body.style.top,
+    };
+
+    scrollPositionRef.current = window.scrollY || window.pageYOffset;
+    body.style.overflow = "hidden";
+    body.style.position = "fixed";
+    body.style.top = `-${scrollPositionRef.current}px`;
+    body.style.width = "100%";
+
+    // ESC key handler
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleEsc);
+
+    return () => {
+      document.removeEventListener("keydown", handleEsc);
+      const { overflow, position, top } = previousBodyStylesRef.current;
+      body.style.overflow = overflow;
+      body.style.position = position;
+      body.style.top = top;
+      body.style.width = "";
+      window.scrollTo({ top: scrollPositionRef.current });
+    };
+  }, [isOpen, onClose]);
+
   useEffect(() => {
     if (isOpen && dealId) {
       loadDealDetails();
     }
+    // Reset loading when modal closes
+    if (!isOpen) {
+      setDeal(null);
+      setLoading(false);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, dealId]);
 
   const loadDealDetails = async () => {
@@ -196,11 +268,18 @@ export function DealDetailsModal({ dealId, isOpen, onClose }: DealDetailsModalPr
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted || !portalRootRef.current) return null;
 
-  return (
-    <div className={styles.modalOverlay} onClick={onClose}>
-      <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+  // Handle overlay click with onMouseDown to prevent click-through issues
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  return createPortal(
+    <div className={styles.modalOverlay} onMouseDown={handleOverlayClick}>
+      <div className={styles.modalContent}>
         {/* Modal Header */}
         <div className={styles.modalHeader}>
           <div className={styles.headerLeft}>
@@ -246,12 +325,25 @@ export function DealDetailsModal({ dealId, isOpen, onClose }: DealDetailsModalPr
 
         {/* Modal Body */}
         <div className={styles.modalBody}>
-          {loading ? (
+          {loading && (
             <div className={styles.loadingState}>
               <div className={styles.spinner}></div>
               <p>Lade Deal-Details...</p>
             </div>
-          ) : deal ? (
+          )}
+          
+          {!loading && !deal && (
+            <div className={styles.errorState}>
+              <div className={styles.errorIcon}>⚠️</div>
+              <h3>Deal nicht gefunden</h3>
+              <p>Dieser Deal konnte nicht geladen werden oder existiert nicht.</p>
+              <button className={styles.btnPrimary} onClick={onClose}>
+                Schließen
+              </button>
+            </div>
+          )}
+          
+          {!loading && deal && (
             <>
               {/* Tab Navigation */}
               <div className={styles.tabNavigation}>
@@ -435,13 +527,9 @@ export function DealDetailsModal({ dealId, isOpen, onClose }: DealDetailsModalPr
                 )}
               </div>
             </>
-          ) : (
-            <div className={styles.errorState}>
-              <p>Deal konnte nicht geladen werden</p>
-            </div>
           )}
         </div>
       </div>
     </div>
-  );
+  , portalRootRef.current);
 }

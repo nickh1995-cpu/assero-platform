@@ -102,6 +102,26 @@ export function MobileTouchHandler({
     const deltaTime = touchEnd.time - touchStart.time;
     const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
+    // Check if target is a button, link, or interactive element
+    const target = e.target as HTMLElement;
+    const isInteractive = target.tagName === 'BUTTON' || 
+                          target.tagName === 'A' || 
+                          target.tagName === 'INPUT' ||
+                          target.closest('button') ||
+                          target.closest('a') ||
+                          target.closest('[role="button"]');
+
+    // Don't interfere with button clicks - let native click handlers work
+    if (isInteractive && distance < 10 && deltaTime < 300) {
+      // This is a tap on an interactive element - don't trigger onTap callback
+      // Let the native click event handle it
+      setTouchStart(null);
+      setTouchEnd(null);
+      setIsLongPressing(false);
+      setLastPinchDistance(null);
+      return;
+    }
+
     // Determine gesture type
     if (distance < 10 && deltaTime < 300) {
       // Tap gesture

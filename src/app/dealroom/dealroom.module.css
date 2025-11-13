@@ -130,7 +130,7 @@
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, opacity 0.3s ease;
   box-shadow: 0 4px 12px rgba(44, 90, 120, 0.3);
   user-select: none;
   -webkit-user-select: none;
@@ -152,7 +152,7 @@
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease, opacity 0.3s ease;
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -181,7 +181,7 @@
   padding: 32px;
   box-shadow: 0 8px 32px rgba(16, 34, 49, 0.1);
   border: 1px solid rgba(44, 90, 120, 0.1);
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   position: relative;
   overflow: hidden;
 }
@@ -283,7 +283,7 @@
   padding: 24px;
   box-shadow: 0 4px 16px rgba(16, 34, 49, 0.08);
   border: 1px solid rgba(44, 90, 120, 0.1);
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .dealCard:hover {
@@ -378,7 +378,7 @@
   padding: 24px;
   box-shadow: 0 4px 16px rgba(16, 34, 49, 0.08);
   border: 1px solid rgba(44, 90, 120, 0.1);
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .allocationCard:hover {
@@ -682,19 +682,19 @@
 .portfolioCard:hover,
 .dealCard:hover,
 .allocationCard:hover {
-  transform: translateY(-8px) scale(1.02);
+  transform: translateY(-4px); /* Removed scale() - causes unwanted zoom effect */
   box-shadow: 
     0 24px 64px rgba(16, 34, 49, 0.2),
     0 8px 32px rgba(16, 34, 49, 0.1);
 }
 
 .btnPrimary:hover {
-  transform: translateY(-3px) scale(1.05);
+  transform: translateY(-2px); /* Removed scale() - causes unwanted zoom effect */
   box-shadow: 0 12px 32px rgba(44, 90, 120, 0.4);
 }
 
 .btnSecondary:hover {
-  transform: translateY(-2px) scale(1.03);
+  transform: translateY(-2px); /* Removed scale() - causes unwanted zoom effect */
   box-shadow: 0 8px 24px rgba(44, 90, 120, 0.3);
 }
 
@@ -743,7 +743,7 @@
 .portfolioCard,
 .dealCard,
 .allocationCard {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .portfolioCard:hover .portfolioName,
@@ -754,11 +754,11 @@
 }
 
 .statusBadge {
-  transition: all 0.3s ease;
+  transition: box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
 }
 
 .statusBadge:hover {
-  transform: scale(1.05);
+  /* Removed scale() - causes unwanted zoom effect */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -831,7 +831,7 @@
   font-size: 0.9rem;
   color: #2c5a78;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
 }
 
 .backButton:hover {
@@ -908,7 +908,7 @@
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
 }
 
 .roleSwitchButton:hover {
@@ -950,7 +950,7 @@
   .portfolioCard:hover,
   .dealCard:hover,
   .allocationCard:hover {
-    transform: translateY(-4px) scale(1.01);
+    transform: translateY(-2px); /* Removed scale() - causes unwanted zoom effect on mobile */
   }
   
   .btnPrimary,

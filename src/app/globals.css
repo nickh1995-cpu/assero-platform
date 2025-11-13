@@ -37,6 +37,11 @@
 
 html {
   color-scheme: light dark;
+  /* Prevent shrinking on click - reserve space for scrollbar */
+  overflow-x: hidden;
+  width: 100vw;
+  /* Always reserve space for scrollbar to prevent layout shift */
+  overflow-y: scroll;
 }
 
 body {
@@ -45,6 +50,15 @@ body {
   font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system,
     Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue, Arial,
     "Apple Color Emoji", "Segoe UI Emoji";
+  /* Prevent shrinking on click - ensure full width */
+  width: 100%;
+  min-width: 100%;
+  position: relative;
+  /* Prevent scrollbar from causing shrink */
+  overflow-x: hidden;
+  /* Prevent layout shift when modal opens */
+  margin: 0;
+  padding: 0;
 }
 
 /* Utilities */
@@ -52,4 +66,24 @@ body {
   max-width: 1200px;
   margin-inline: auto;
   padding-inline: 1rem;
+}
+
+/* ==============================================
+   TOUCH OPTIMIZATION - Fix Zoom-Effekt beim Klicken
+   ============================================== */
+
+/* Prevent unwanted tap highlight effects (iOS/Android blue flash) */
+* {
+  -webkit-tap-highlight-color: transparent;
+  tap-highlight-color: transparent;
+}
+
+/* Disable double-tap zoom on interactive elements & remove 300ms touch delay */
+button,
+a,
+[role="button"],
+[role="tab"],
+[role="link"] {
+  touch-action: manipulation;
+  -ms-touch-action: manipulation;
 }

@@ -5,7 +5,7 @@
 -- First, ensure we have the asset categories
 INSERT INTO public.asset_categories (name, slug, description, icon, sort_order, is_active)
 VALUES 
-  ('Immobilien', 'immobilien', 'Wohnungen, Häuser und Gewerbeimmobilien', '🏠', 1, true),
+  ('Real Estate', 'real-estate', 'Premium Immobilien und Gewerbeimmobilien', '🏠', 1, true),
   ('Luxusuhren', 'luxusuhren', 'Premium Uhren von Rolex, Patek Philippe, Audemars Piguet', '⌚', 2, true),
   ('Fahrzeuge', 'fahrzeuge', 'Sportwagen, Luxuslimousinen und SUVs', '🚗', 3, true)
 ON CONFLICT (slug) DO NOTHING;
@@ -13,12 +13,12 @@ ON CONFLICT (slug) DO NOTHING;
 -- Get category IDs for reference
 DO $$
 DECLARE
-  immobilien_id UUID;
+  real_estate_id UUID;
   luxusuhren_id UUID;
   fahrzeuge_id UUID;
 BEGIN
   -- Get category IDs
-  SELECT id INTO immobilien_id FROM public.asset_categories WHERE slug = 'immobilien';
+  SELECT id INTO real_estate_id FROM public.asset_categories WHERE slug = 'real-estate';
   SELECT id INTO luxusuhren_id FROM public.asset_categories WHERE slug = 'luxusuhren';
   SELECT id INTO fahrzeuge_id FROM public.asset_categories WHERE slug = 'fahrzeuge';
 
@@ -37,7 +37,7 @@ BEGIN
   (
     '3-Zimmer Wohnung in München Altstadt',
     'Exklusive 3-Zimmer-Wohnung im Herzen der Münchner Altstadt. Hochwertige Ausstattung, Parkett, moderne Einbauküche.',
-    immobilien_id,
+    real_estate_id,
     520000.00,
     'EUR',
     'München, Altstadt',
@@ -48,7 +48,7 @@ BEGIN
   (
     '4-Zimmer Maisonette München Zentrum',
     'Traumhafte Maisonette-Wohnung über 2 Etagen mit Dachterrasse und herrlichem Ausblick.',
-    immobilien_id,
+    real_estate_id,
     580000.00,
     'EUR',
     'München, Maxvorstadt',
@@ -59,7 +59,7 @@ BEGIN
   (
     '3.5-Zimmer Wohnung Schwabing',
     'Charmante Altbauwohnung in Schwabing mit hohen Decken und Stuck. Saniert und modernisiert.',
-    immobilien_id,
+    real_estate_id,
     495000.00,
     'EUR',
     'München, Schwabing',
@@ -70,7 +70,7 @@ BEGIN
   (
     '3-Zimmer Penthouse Lehel',
     'Exklusives Penthouse mit 360° Dachterrasse im begehrten Lehel-Viertel.',
-    immobilien_id,
+    real_estate_id,
     615000.00,
     'EUR',
     'München, Lehel',
@@ -81,7 +81,7 @@ BEGIN
   (
     '2.5-Zimmer Wohnung Haidhausen',
     'Modern renovierte Wohnung in Haidhausen, ruhige Lage, dennoch zentral.',
-    immobilien_id,
+    real_estate_id,
     445000.00,
     'EUR',
     'München, Haidhausen',
@@ -92,7 +92,7 @@ BEGIN
   (
     'Luxus-Villa am Starnberger See',
     'Herrschaftliche Villa direkt am Starnberger See mit privatem Seezugang und Bootsanleger.',
-    immobilien_id,
+    real_estate_id,
     3500000.00,
     'EUR',
     'Starnberg, Seelage',

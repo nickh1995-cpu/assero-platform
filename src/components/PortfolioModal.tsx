@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { checkUserVerification } from "@/lib/verification";
 import styles from "./PortfolioModal.module.css";
 
 interface PortfolioModalProps {
@@ -22,63 +23,83 @@ export function PortfolioModal({ isOpen, onClose, onPortfolioCreated }: Portfoli
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      
+      // ESC key handler
+      const handleEsc = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          onClose();
+        }
+      };
+      
+      document.addEventListener('keydown', handleEsc);
+      
+      return () => {
+        document.body.style.overflow = '';
+        document.removeEventListener('keydown', handleEsc);
+      };
+    }
+  }, [isOpen, onClose]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     try {
+      // Check user verification before allowing portfolio creation
+      const verification = await checkUserVerification();
+      
+      if (!verification.isVerified) {
+        setError(verification.message || 'Sie müssen vollständig verifiziert sein, um ein Portfolio zu erstellen. Bitte vervollständigen Sie Ihre Registrierung und Verifikation.');
+        setLoading(false);
+        return;
+      }
+
       const supabase = getSupabaseBrowserClient();
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
         setError('Sie müssen angemeldet sein, um ein Portfolio zu erstellen.');
+        setLoading(false);
         return;
       }
 
       const portfolioData = {
+        user_id: user.id, // Required for RLS
         name: formData.name,
-        description: formData.description,
-        target_value: parseFloat(formData.target_value),
+        description: formData.description || null,
+        total_value: 0, // Initialize to 0
         currency: formData.currency,
-        risk_level: formData.risk_level,
-        investment_horizon: formData.investment_horizon,
-        user_id: user.id,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        is_active: true
       };
 
-      // Try to insert into portfolio_overview table, with fallback
-      let portfolioResult;
-      try {
-        const { data, error: insertError } = await supabase
-          .from('portfolio_overview')
-          .insert(portfolioData)
-          .select()
-          .single();
+      console.log('Creating portfolio with data:', portfolioData);
 
-        if (insertError) {
-          console.warn('portfolio_overview table not found, creating fallback portfolio:', insertError);
-          // Create fallback portfolio object
-          portfolioResult = {
-            id: `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-            ...portfolioData,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          };
-        } else {
-          portfolioResult = data;
-        }
-      } catch (tableError) {
-        console.warn('portfolio_overview table not accessible, creating fallback portfolio:', tableError);
-        // Create fallback portfolio object
-        portfolioResult = {
-          id: `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-          ...portfolioData,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        };
+      // Insert into portfolios table (portfolio_overview is a view, not directly insertable)
+      const { data: portfolioResult, error: insertError } = await supabase
+        .from('portfolios')
+        .insert(portfolioData)
+        .select()
+        .single();
+
+      if (insertError) {
+        console.error('Error creating portfolio:', insertError);
+        setError(`Fehler beim Erstellen des Portfolios: ${insertError.message}`);
+        setLoading(false);
+        return;
       }
+
+      if (!portfolioResult) {
+        setError('Portfolio wurde erstellt, aber keine Daten zurückgegeben.');
+        setLoading(false);
+        return;
+      }
+
+      console.log('Portfolio created successfully:', portfolioResult);
 
       onPortfolioCreated(portfolioResult);
       onClose();
@@ -114,9 +135,16 @@ export function PortfolioModal({ isOpen, onClose, onPortfolioCreated }: Portfoli
 
   if (!isOpen) return null;
 
+  // Handle overlay click with onMouseDown to prevent click-through issues
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div className={styles.modalOverlay} onClick={onClose}>
-      <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+    <div className={styles.modalOverlay} onMouseDown={handleOverlayClick}>
+      <div className={styles.modalContent}>
         <div className={styles.modalHeader}>
           <h2 className={styles.modalTitle}>Neues Portfolio erstellen</h2>
           <button className={styles.closeButton} onClick={onClose}>

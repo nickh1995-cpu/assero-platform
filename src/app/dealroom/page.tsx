@@ -3,6 +3,8 @@
 import { useEffect, useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { checkUserVerification, VerificationStatus } from "@/lib/verification";
 import { Header } from "@/components/Header";
 import { DealDetailsModal } from "@/components/DealDetailsModal";
 import { PortfolioDashboard } from "@/components/PortfolioDashboard";
@@ -13,6 +15,7 @@ import { RoleBasedNavigation } from "@/components/RoleBasedNavigation";
 import { FallbackDealroom } from "@/components/FallbackDealroom";
 import { PortfolioModal } from "@/components/PortfolioModal";
 import { DealModal } from "@/components/DealModal";
+import { EmailConfirmationNotice } from "@/components/EmailConfirmationNotice";
 import styles from "./dealroom.module.css";
 
 interface Portfolio {
@@ -50,6 +53,7 @@ interface AssetAllocation {
 
 function DealroomContent() {
   const router = useRouter();
+  const { user: authUser } = useAuth();
   const [user, setUser] = useState<any>(null);
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
   const [deals, setDeals] = useState<Deal[]>([]);
@@ -59,6 +63,7 @@ function DealroomContent() {
   const [creatingSampleData, setCreatingSampleData] = useState(false);
   const [selectedDealId, setSelectedDealId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isOpeningModal, setIsOpeningModal] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
   const [selectedPortfolioId, setSelectedPortfolioId] = useState<string | null>(null);
   const [showRegistration, setShowRegistration] = useState(false);
@@ -67,153 +72,326 @@ function DealroomContent() {
   const [showFallback, setShowFallback] = useState(false);
   const [showPortfolioModal, setShowPortfolioModal] = useState(false);
   const [showDealModal, setShowDealModal] = useState(false);
+  const [verificationStatus, setVerificationStatus] = useState<VerificationStatus | null>(null);
+  const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+
+  useEffect(() => {
+    if (authUser) {
+      setUser(authUser);
+    }
+  }, [authUser]);
 
   useEffect(() => {
     const supabase = getSupabaseBrowserClient();
     
-    // Set up auth state listener for session persistence
+    // Set up auth state listener for persistent session management
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state changed:', event, session?.user?.id);
         
         if (event === 'SIGNED_IN' && session?.user) {
-          setUser(session.user);
-          setShowRegistration(false);
-          setShowNavigation(true);
-          // Reload data when user signs in
-          window.location.reload();
+          console.log('=== SIGNED_IN EVENT ===');
+          console.log('User ID:', session.user.id);
+          console.log('Email:', session.user.email);
+          console.log('Email confirmed:', session.user.email_confirmed_at);
+          
+          // User signed in - check verification
+          const status = await checkUserVerification();
+          console.log('Verification Status:', JSON.stringify(status, null, 2));
+          setVerificationStatus(status);
+          
+          if (status.isVerified) {
+            console.log('✅ User verified - loading dealroom data');
+            setUser(session.user);
+            setShowRegistration(false);
+            setShowNavigation(false);
+            // Continue loading dealroom data
+            loadDealroomData();
+          } else {
+            console.warn('❌ User NOT verified - showing registration');
+            console.warn('Reason:', status.message);
+            // IMPORTANT: Only show registration for truly new users
+            // If user has email confirmed but profile missing, allow access anyway
+            if (status.isEmailConfirmed) {
+              console.log('⚠️ Email confirmed but profile issues - allowing access with degradation');
+              setUser(session.user);
+              setShowRegistration(false);
+            loadDealroomData();
+          } else {
+            // User signed in but not verified - show registration/confirmation
+            setShowRegistration(true);
+            }
+          }
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
+          setVerificationStatus(null);
           setShowRegistration(true);
           setShowNavigation(false);
+        } else if (event === 'TOKEN_REFRESHED') {
+          console.log('Session token refreshed - maintaining login state');
+          // Token was refreshed - session is still valid, no action needed
+        } else if (event === 'USER_UPDATED') {
+          console.log('User data updated');
+          if (session?.user) {
+            setUser(session.user);
+          }
         }
       }
     );
 
     // Set a timeout to prevent infinite loading
+    // NOTE: Must be longer than Supabase query timeouts (30s) to avoid conflicts
     const timeoutId = setTimeout(() => {
-      console.warn('Data loading timeout - forcing loading to stop');
+      console.warn('⏱️ === OVERALL DATA LOADING TIMEOUT (60s) ===');
+      console.warn('Data loading exceeded 60 seconds - forcing UI to display');
+      console.warn('This might indicate:');
+      console.warn('1. Slow Supabase connection');
+      console.warn('2. Missing tables or RLS policy issues');
+      console.warn('3. Network latency');
+      
+      // Force stop loading to show UI
       setLoading(false);
-    }, 10000); // 10 second timeout
+      
+      // Intelligent fallback decision
+      const authCookie = document.cookie.includes('sb-') && document.cookie.includes('-auth-token');
+      console.log('Cookie check:', authCookie ? '✅ Auth cookie present' : '❌ No auth cookie');
+      
+      if (!verificationStatus && !user) {
+        if (authCookie) {
+          console.warn('→ Auth cookie present but no user loaded → showing fallback UI');
+          setShowFallback(true);
+        } else {
+          console.warn('→ No auth cookie → showing registration');
+        setShowRegistration(true);
+      }
+      } else {
+        console.log('→ User/verification status present → continuing normally');
+      }
+    }, 60000); // 60 second timeout (longer than individual Supabase timeouts)
 
     async function loadDealroomData() {
       
       try {
         console.log('Starting data load...');
+        setLoadingProgress(10); // Start progress
         
-        // Check if user is authenticated
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          console.log('No user found, showing registration');
-          setShowRegistration(true);
-          setLoading(false);
-          return;
-        }
+        // Quick auth check with timeout
+        console.log('Dealroom: Checking session...');
+        let session = null;
+        let currentUser = null;
         
-        // Check if user's email is confirmed
-        if (user.email_confirmed_at === null) {
-          console.log('User email not confirmed, showing registration');
-          setShowRegistration(true);
-          setLoading(false);
-          return;
-        }
-        
-        console.log('User found:', user.id);
-        setUser(user);
-        
-        // Load user role with error handling
         try {
-          const { data: roleData, error: roleError } = await supabase
+          const sessionPromise = supabase.auth.getSession();
+          const sessionTimeout = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Session query timeout')), 30000) // Increased to 30s
+          );
+          
+          const sessionResult = await Promise.race([sessionPromise, sessionTimeout]) as any;
+          
+          if (sessionResult?.data?.session?.user) {
+            session = sessionResult.data.session;
+            currentUser = session.user;
+            console.log('Dealroom: Session found:', currentUser.id);
+            setUser(currentUser);
+            setLoadingProgress(30); // Session found
+          }
+        } catch (sessionErr: any) {
+          console.warn('Dealroom: Session check failed:', sessionErr?.message || sessionErr);
+          setLoadingProgress(25); // Session failed, continue
+        }
+        
+        // If no session, try getUser with timeout
+        if (!currentUser) {
+          console.log('Dealroom: No session, trying getUser...');
+          try {
+            const userPromise = supabase.auth.getUser();
+            const userTimeout = new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('User query timeout')), 30000) // Increased to 30s
+            );
+            
+            const userResult = await Promise.race([userPromise, userTimeout]) as any;
+            
+            if (userResult?.data?.user) {
+              currentUser = userResult.data.user;
+              console.log('Dealroom: User found:', currentUser.id);
+              setUser(currentUser);
+              setLoadingProgress(50); // User found
+            }
+          } catch (userErr: any) {
+            console.warn('Dealroom: User check failed:', userErr?.message || userErr);
+            setLoadingProgress(45); // User check failed
+          }
+        }
+        
+        // If still no user, apply intelligent fallback logic
+        if (!currentUser) {
+          console.warn('⚠️ === NO USER FOUND AFTER SESSION + USER CHECKS ===');
+          console.warn('This might indicate:');
+          console.warn('1. User is not logged in (legitimate - needs registration)');
+          console.warn('2. Supabase connection is slow/failing (temporary issue)');
+          console.warn('3. Auth token expired (need re-login)');
+          console.warn('4. Cache was cleared but user IS logged in (cookie exists)');
+          
+          // Check for auth cookie to distinguish between cases
+          const authCookie = document.cookie.includes('sb-') && document.cookie.includes('-auth-token');
+          console.log('🍪 Cookie check:', authCookie ? '✅ Auth cookie present' : '❌ No auth cookie');
+          
+          if (authCookie) {
+            console.warn('⚠️ ===== CRITICAL: AUTH COOKIE EXISTS BUT SESSION/USER QUERY FAILED =====');
+            console.warn('This strongly suggests:');
+            console.warn('→ Supabase connection issues (slow or timeout)');
+            console.warn('→ User IS logged in but backend is unreachable');
+            console.warn('→ Showing FALLBACK UI instead of forcing registration');
+            console.warn('→ This preserves user experience and prevents data loss');
+            
+            // Show fallback UI with retry option
+            setShowFallback(true);
+            setLoading(false);
+            return;
+          }
+          
+          console.log('❌ No auth cookie found');
+          console.log('→ User genuinely NOT logged in');
+          console.log('→ Showing registration as expected');
+          setShowRegistration(true);
+          setLoading(false);
+          return;
+        }
+        
+        console.log('✅ User authenticated successfully:', currentUser.id, currentUser.email);
+        setLoadingProgress(60); // User authenticated
+        
+        // Set verification status to allow access
+        setVerificationStatus({
+          isVerified: true,
+          isEmailConfirmed: currentUser.email_confirmed_at !== null,
+          isProfileVerified: true,
+          isProfileComplete: true,
+          profile: null,
+          message: 'Access granted'
+        });
+        
+        console.log('Dealroom: Using user:', currentUser.id);
+        setLoadingProgress(70); // Verification set
+        
+        // Load user role with error handling (non-blocking)
+        try {
+          const rolePromise = supabase
             .from('user_roles')
             .select('role_type')
-            .eq('user_id', user.id)
+            .eq('user_id', currentUser.id)
             .eq('is_primary_role', true)
             .single();
           
-          if (roleError) {
-            console.warn('Error loading user role (table might not exist):', roleError);
-            // Set default role
+          const roleTimeout = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Role query timeout')), 2000)
+          );
+          
+          const roleResult = await Promise.race([rolePromise, roleTimeout]) as any;
+          
+          if (roleResult?.data) {
+            console.log('User role loaded:', roleResult.data.role_type);
+            setUserRole(roleResult.data.role_type);
+            setLoadingProgress(80); // Role loaded
+          } else {
             setUserRole('buyer');
-          } else if (roleData) {
-            console.log('User role loaded:', roleData.role_type);
-            setUserRole(roleData.role_type);
+            setLoadingProgress(75); // Default role
           }
-        } catch (roleError) {
-          console.warn('User roles table not found, using default role');
+        } catch (roleError: any) {
+          console.warn('User role not loaded (using default):', roleError?.message || roleError);
           setUserRole('buyer');
+          setLoadingProgress(75); // Default role
         }
         
-        // Get portfolios with error handling
+        // Get portfolios with error handling (non-blocking)
         try {
-          console.log('Loading portfolios...');
-          const { data: portfoliosData, error: portfoliosError } = await supabase
-            .from("portfolio_overview")
+          console.log('Dealroom: Loading portfolios...');
+          const portfoliosPromise = supabase
+            .from("portfolios")
             .select("*")
+            .eq("user_id", currentUser.id)
+            .eq("is_active", true)
             .order("updated_at", { ascending: false });
           
-          if (portfoliosError) {
-            console.warn('Error loading portfolios:', portfoliosError);
+          const portfoliosTimeout = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Portfolios query timeout')), 3000)
+          );
+          
+          const portfoliosResult = await Promise.race([portfoliosPromise, portfoliosTimeout]) as any;
+          
+          if (portfoliosResult?.error) {
+            console.error('Dealroom: Portfolios error:', portfoliosResult.error);
             setPortfolios([]);
-          } else if (portfoliosData) {
-            console.log('Loaded portfolios:', portfoliosData.length);
-            // Remove duplicates based on id
-            const uniquePortfolios = portfoliosData.filter((portfolio, index, self) => 
-              index === self.findIndex(p => p.id === portfolio.id)
-            );
-            console.log('Unique portfolios:', uniquePortfolios.length);
-            setPortfolios(uniquePortfolios);
+            setLoadingProgress(85); // Portfolios failed
+          } else {
+            const portfoliosData = portfoliosResult?.data || [];
+            console.log('Dealroom: Loaded portfolios:', portfoliosData.length);
+            setPortfolios(portfoliosData);
+            setLoadingProgress(90); // Portfolios loaded
             
-            // Get asset allocations for first portfolio
-            if (uniquePortfolios.length > 0) {
+            // Get asset allocations for first portfolio (non-blocking)
+            if (portfoliosData.length > 0) {
               try {
                 const { data: allocationsData } = await supabase
                   .from("asset_allocations")
                   .select("*")
-                  .eq("portfolio_id", uniquePortfolios[0].id);
+                  .eq("portfolio_id", portfoliosData[0].id);
                 setAllocations(allocationsData || []);
-                setSelectedPortfolio(uniquePortfolios[0].id);
+                setSelectedPortfolio(portfoliosData[0].id);
               } catch (allocError) {
-                console.warn('Error loading allocations:', allocError);
+                console.warn('Dealroom: Allocations error:', allocError);
                 setAllocations([]);
               }
             }
           }
-        } catch (portfoliosError) {
-          console.warn('Portfolios table not found, using empty array');
+        } catch (portfoliosError: any) {
+          console.warn('Dealroom: Portfolios timeout/error:', portfoliosError?.message || portfoliosError);
           setPortfolios([]);
         }
         
-        // Get deals with error handling
+        // Get deals with error handling (non-blocking)
         try {
-          console.log('Loading deals...');
-          const { data: dealsData, error: dealsError } = await supabase
-            .from("deal_pipeline")
+          console.log('Dealroom: Loading deals...');
+          const dealsPromise = supabase
+            .from("deals")
             .select("*")
+            .eq("user_id", currentUser.id)
             .order("expected_close_date", { ascending: true });
           
-          if (dealsError) {
-            console.warn('Error loading deals:', dealsError);
+          const dealsTimeout = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Deals query timeout')), 3000)
+          );
+          
+          const dealsResult = await Promise.race([dealsPromise, dealsTimeout]) as any;
+          
+          if (dealsResult?.error) {
+            console.error('Dealroom: Deals error:', dealsResult.error);
             setDeals([]);
-          } else if (dealsData) {
-            console.log('Loaded deals:', dealsData.length);
-            // Remove duplicates based on id
-            const uniqueDeals = dealsData.filter((deal, index, self) => 
-              index === self.findIndex(d => d.id === deal.id)
-            );
-            console.log('Unique deals:', uniqueDeals.length);
-            setDeals(uniqueDeals);
+          } else {
+            const dealsData = dealsResult?.data || [];
+            console.log('Dealroom: Loaded deals:', dealsData.length);
+            setDeals(dealsData);
           }
-        } catch (dealsError) {
-          console.warn('Deals table not found, using empty array');
+        } catch (dealsError: any) {
+          console.warn('Dealroom: Deals timeout/error:', dealsError?.message || dealsError);
           setDeals([]);
         }
         
       } catch (error) {
         console.error("Error fetching dealroom data:", error);
         setShowFallback(true);
+        setLoading(false);
+        setLoadingProgress(100); // Error, but complete
       } finally {
         clearTimeout(timeoutId);
+        setLoadingProgress(100); // Complete
         setLoading(false);
+        // Force loading to false if we show registration
+        if (showRegistration) {
+          setLoading(false);
+        }
       }
     }
 
@@ -259,16 +437,49 @@ function DealroomContent() {
     setShowDealModal(true);
   };
 
-  const handlePortfolioCreated = (portfolio: any) => {
+  const handlePortfolioCreated = async (portfolio: any) => {
     console.log('Portfolio created:', portfolio);
-    setPortfolios(prev => [portfolio, ...prev]);
     setShowPortfolioModal(false);
+    
+    // Reload portfolios from database to ensure consistency
+    const supabase = getSupabaseBrowserClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (user) {
+      const { data: portfoliosData, error: portfoliosError } = await supabase
+        .from("portfolios")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("is_active", true)
+        .order("updated_at", { ascending: false });
+      
+      if (!portfoliosError && portfoliosData) {
+        console.log('Reloaded portfolios:', portfoliosData.length);
+        setPortfolios(portfoliosData);
+      }
+    }
   };
 
-  const handleDealCreated = (deal: any) => {
+  const handleDealCreated = async (deal: any) => {
     console.log('Deal created:', deal);
-    setDeals(prev => [deal, ...prev]);
     setShowDealModal(false);
+    
+    // Reload deals from database to ensure consistency
+    const supabase = getSupabaseBrowserClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (user) {
+      const { data: dealsData, error: dealsError } = await supabase
+        .from("deals")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("expected_close_date", { ascending: true });
+      
+      if (!dealsError && dealsData) {
+        console.log('Reloaded deals:', dealsData.length);
+        setDeals(dealsData);
+      }
+    }
   };
 
   const formatPrice = (value: number, currency: string) => {
@@ -315,9 +526,31 @@ function DealroomContent() {
     }
   };
 
-  const handleDealClick = (dealId: string) => {
+  const handleDealClick = (dealId: string, e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    // Prevent double-click - check if already opening or open
+    if (isOpeningModal || (isModalOpen && selectedDealId === dealId)) {
+      console.log('Modal already opening or open for this deal:', dealId);
+      return;
+    }
+    
+    console.log('Deal clicked:', dealId);
+    
+    // Set flag to prevent double clicks
+    setIsOpeningModal(true);
+    
+    // Set modal state
     setSelectedDealId(dealId);
     setIsModalOpen(true);
+    
+    // Reset flag after a short delay to allow modal to open
+    setTimeout(() => {
+      setIsOpeningModal(false);
+    }, 300);
   };
 
   const handleCloseModal = () => {
@@ -375,16 +608,17 @@ function DealroomContent() {
 
   const handleRegistrationComplete = (userData: any) => {
     console.log('Registration completed:', userData);
-    setShowRegistration(false);
-    setUserRole(userData.role);
-    setUser(userData.user);
     
-    // Show success message and redirect after a short delay
-    setTimeout(() => {
-      alert('🎉 Willkommen bei ASSERO! Sie werden zum Dashboard weitergeleitet...');
-      // Redirect to dashboard instead of reloading
-      window.location.href = '/dashboard';
-    }, 1000);
+    // Registration is complete - user was shown email confirmation message
+    // and redirected to home page by UserRegistration component
+    // This callback should not do anything else
+  };
+
+  const handleEmailConfirmed = () => {
+    setShowEmailConfirmation(false);
+    setPendingEmail(null);
+    // Reload to check verification status
+    window.location.reload();
   };
 
   const handleShowNavigation = () => {
@@ -398,13 +632,69 @@ function DealroomContent() {
     window.location.reload();
   };
 
-  // Show registration modal if user is not authenticated
-  if (showRegistration) {
+  // Removed: This was conflicting with the main timeout logic
+  // The main useEffect at line 137 already handles timeout after 60s
+
+  // Show email confirmation notice if user registered but didn't confirm email
+  if (showEmailConfirmation && pendingEmail) {
     return (
-      <UserRegistration 
-        onRegistrationComplete={handleRegistrationComplete}
-        onClose={() => setShowRegistration(false)}
-      />
+      <main>
+        <Header />
+        <div style={{ padding: '40px 20px', maxWidth: '800px', margin: '0 auto' }}>
+          <EmailConfirmationNotice 
+            email={pendingEmail}
+            onConfirmed={handleEmailConfirmed}
+            redirectTo="/dealroom"
+          />
+        </div>
+      </main>
+    );
+  }
+
+  // Show registration modal if user is not authenticated or not verified
+  if (showRegistration) {
+    // Determine if user can close the modal
+    // Only allow closing if user is NOT logged in or email is NOT confirmed
+    // For logged-in users who need verification, prevent closing
+    const canClose = !verificationStatus || !verificationStatus.isEmailConfirmed;
+    
+    return (
+      <div>
+        <UserRegistration 
+          onRegistrationComplete={handleRegistrationComplete}
+          onClose={canClose ? () => {
+            // Only redirect to sign-in if they try to close and are logged in
+            if (verificationStatus && verificationStatus.isEmailConfirmed) {
+              // User is logged in but not verified - redirect to sign-in
+              router.push('/sign-in');
+            } else {
+              // User is not logged in - just close (go to homepage)
+              router.push('/');
+            }
+          } : undefined}
+        />
+        {verificationStatus && verificationStatus.message && (
+          <div style={{
+            position: 'fixed',
+            top: '20px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: '#ff4444',
+            color: 'white',
+            padding: '16px 24px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            zIndex: 10000,
+            maxWidth: '90%',
+            textAlign: 'center'
+          }}>
+            <strong>⚠️ Verifikation erforderlich</strong>
+            <p style={{ margin: '8px 0 0 0', fontSize: '14px' }}>
+              {verificationStatus.message}
+            </p>
+          </div>
+        )}
+      </div>
     );
   }
 
@@ -425,13 +715,41 @@ function DealroomContent() {
     return <FallbackDealroom onRetry={handleRetry} />;
   }
 
-  if (loading) {
+  // Don't show loading if we have registration modal (user interaction needed)
+  // Also don't block UI if loading times out or user is verified
+  if (loading && !showRegistration && !verificationStatus?.isVerified) {
     return (
       <main>
         <Header />
         <div className={styles.loadingContainer}>
           <div className={styles.loadingSpinner}></div>
           <p>Lade Dealroom-Daten...</p>
+          {loadingProgress > 0 && (
+            <div style={{
+              marginTop: '16px',
+              width: '200px',
+              height: '4px',
+              background: 'rgba(255,255,255,0.1)',
+              borderRadius: '2px',
+              overflow: 'hidden',
+            }}>
+              <div style={{
+                width: `${loadingProgress}%`,
+                height: '100%',
+                background: 'linear-gradient(90deg, #4a8bb8, #3d7a9f)',
+                transition: 'width 0.5s ease',
+              }}></div>
+            </div>
+          )}
+          <p style={{
+            fontSize: '0.875rem',
+            color: 'rgba(255,255,255,0.6)',
+            marginTop: '12px'
+          }}>
+            {loadingProgress < 30 ? 'Verbinde mit Server...' : 
+             loadingProgress < 60 ? 'Authentifizierung läuft...' : 
+             'Lade Daten...'}
+          </p>
         </div>
       </main>
     );
@@ -627,7 +945,8 @@ function DealroomContent() {
                   <div className={styles.dealActions}>
                     <button 
                       className={styles.btnSecondary}
-                      onClick={() => handleDealClick(deal.id)}
+                      onClick={(e) => handleDealClick(deal.id, e)}
+                      type="button"
                     >
                       Details
                     </button>

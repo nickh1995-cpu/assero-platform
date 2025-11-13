@@ -1,34 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, useCallback } from "react";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 
 export function Header() {
-  const [email, setEmail] = useState<string | null>(null);
-  const [userName, setUserName] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const router = useRouter();
+  const { user, signOut } = useAuth();
 
   // Prevent unnecessary re-renders during development
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
-    const supabase = getSupabaseBrowserClient();
-    if (supabase) {
-      supabase.auth.getUser().then(({ data }) => {
-        setEmail(data.user?.email ?? null);
-        setUserName(data.user?.user_metadata?.first_name ?? data.user?.email?.split('@')[0] ?? 'Benutzer');
-      }).catch((error) => {
-        console.warn("Error getting user:", error);
-        setEmail(null);
-        setUserName(null);
-      });
-    }
   }, []);
+
+  const email = useMemo(() => user?.email ?? null, [user]);
+  const userName = useMemo(() => {
+    if (!user) return null;
+    if (user?.user_metadata?.first_name) {
+      return user.user_metadata.first_name;
+    }
+    if (user?.email) {
+      return user.email.split("@")[0];
+    }
+    return "Benutzer";
+  }, [user]);
 
   // Close dropdown when clicking outside - optimized to prevent unnecessary re-renders
   useEffect(() => {
@@ -62,16 +62,13 @@ export function Header() {
 
   const handleSignOut = useCallback(async () => {
     try {
-      const supabase = getSupabaseBrowserClient();
-      await supabase.auth.signOut();
-      setEmail(null);
-      setUserName(null);
+      await signOut();
       setUserDropdownOpen(false);
       router.push('/');
     } catch (error) {
       console.error('Error signing out:', error);
     }
-  }, [router]);
+  }, [router, signOut]);
 
   const toggleUserDropdown = useCallback(() => {
     setUserDropdownOpen(prev => !prev);

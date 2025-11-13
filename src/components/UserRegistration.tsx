@@ -110,13 +110,21 @@ export function UserRegistration({ onRegistrationComplete, onClose }: UserRegist
 
     try {
       const supabase = getSupabaseBrowserClient();
+      if (!supabase) {
+        throw new Error('Supabase Client nicht verfügbar. Bitte überprüfen Sie Ihre Netzwerkverbindung.');
+      }
       
       // Create user account with email confirmation
+      // Include redirect_to parameter to return to dealroom after confirmation
+      const callbackUrl = `${getAuthCallbackUrl()}?redirect_to=/dealroom`;
+      
+      console.log('Starting user registration...');
+      
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
-          emailRedirectTo: getAuthCallbackUrl(),
+          emailRedirectTo: callbackUrl,
           data: {
             first_name: formData.firstName,
             last_name: formData.lastName,
@@ -125,68 +133,140 @@ export function UserRegistration({ onRegistrationComplete, onClose }: UserRegist
         }
       });
 
-      if (authError) throw authError;
+      if (authError) {
+        console.error('Auth signup error:', authError);
+        throw new Error(`Registrierung fehlgeschlagen: ${authError.message}`);
+      }
 
-      if (authData.user) {
-        // Check if user needs email confirmation
-        if (authData.user.email_confirmed_at === null) {
-          // User needs to confirm email
-          alert('📧 Bestätigungs-E-Mail gesendet!\n\nBitte überprüfen Sie Ihr E-Mail-Postfach und klicken Sie auf den Bestätigungslink.\n\nNach der Bestätigung können Sie sich einloggen.');
-          
-          // Close registration modal
-          onClose?.();
-          return;
+      if (!authData.user) {
+        throw new Error('Benutzer konnte nicht erstellt werden. Bitte versuchen Sie es erneut.');
+      }
+
+      console.log('User created:', authData.user.id);
+
+      // Check if user needs email confirmation
+      if (authData.user.email_confirmed_at === null) {
+        // User needs to confirm email - show clear message
+        // Profile creation will happen AFTER email confirmation
+        setError(null);
+        setLoading(false);
+        
+        console.log('User registered, waiting for email confirmation:', authData.user.id);
+        
+        // Show success message with clear instructions
+        alert(`✅ Registrierung erfolgreich!\n\n📧 Bitte verifizieren Sie Ihre E-Mail-Adresse.\n\nSie haben eine Bestätigungs-E-Mail an ${formData.email} erhalten.\n\nBitte klicken Sie auf den Link in der E-Mail, um Ihre Registrierung abzuschließen.\n\nNach dem Klick auf den Link werden Sie automatisch angemeldet und zur Dealroom-Seite weitergeleitet.`);
+        
+        // Close registration modal and redirect to home
+        onClose?.();
+        window.location.href = '/';
+        return;
+      }
+
+      // User is already confirmed (no email confirmation required)
+      // This happens when email confirmation is disabled in Supabase settings
+      console.log('User already confirmed, creating profile now...');
+
+      // Wait a moment to ensure auth.users record is committed
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Create user role with error handling
+      const { error: roleError } = await supabase
+        .from('user_roles')
+        .insert({
+          user_id: authData.user.id,
+          role_type: formData.userType,
+          is_primary_role: true
+        });
+
+      if (roleError) {
+        console.error('Role creation error:', roleError);
+        // If role already exists, ignore error and continue
+        if (!roleError.message.includes('duplicate key') && !roleError.message.includes('already exists')) {
+          // If FK constraint error, profile will be created after email confirmation
+          if (roleError.message.includes('foreign key constraint')) {
+            console.warn('FK constraint - profile will be created after email confirmation');
+            onClose?.();
+            window.location.href = '/';
+            return;
+          }
+          throw new Error(`Rolle konnte nicht erstellt werden: ${roleError.message}`);
         }
-        // Create user role
-        const { error: roleError } = await supabase
-          .from('user_roles')
+      }
+
+      // Create role-specific profile with error handling
+      if (formData.userType === 'buyer') {
+        const { error: buyerError } = await supabase
+          .from('buyer_profiles')
           .insert({
             user_id: authData.user.id,
-            role_type: formData.userType,
-            is_primary_role: true
+            company_name: formData.companyName || null,
+            contact_person: `${formData.firstName} ${formData.lastName}`,
+            phone: formData.phone || null,
+            website: formData.website || null,
+            verification_status: 'pending'
           });
 
-        if (roleError) throw roleError;
-
-        // Create role-specific profile
-        if (formData.userType === 'buyer') {
-          const { error: buyerError } = await supabase
-            .from('buyer_profiles')
-            .insert({
-              user_id: authData.user.id,
-              company_name: formData.companyName || null,
-              contact_person: `${formData.firstName} ${formData.lastName}`,
-              phone: formData.phone || null,
-              website: formData.website || null,
-              verification_status: 'pending'
-            });
-
-          if (buyerError) throw buyerError;
-        } else if (formData.userType === 'seller') {
-          const { error: sellerError } = await supabase
-            .from('seller_profiles')
-            .insert({
-              user_id: authData.user.id,
-              company_name: formData.companyName!,
-              contact_person: `${formData.firstName} ${formData.lastName}`,
-              phone: formData.phone || null,
-              website: formData.website || null,
-              verification_status: 'pending'
-            });
-
-          if (sellerError) throw sellerError;
+        if (buyerError) {
+          console.error('Buyer profile creation error:', buyerError);
+          // If profile already exists, ignore error and continue
+          if (!buyerError.message.includes('duplicate key') && !buyerError.message.includes('already exists')) {
+            throw new Error(`Käufer-Profil konnte nicht erstellt werden: ${buyerError.message}`);
+          }
         }
+      } else if (formData.userType === 'seller') {
+        const { error: sellerError } = await supabase
+          .from('seller_profiles')
+          .insert({
+            user_id: authData.user.id,
+            company_name: formData.companyName || 'Nicht angegeben',
+            contact_person: `${formData.firstName} ${formData.lastName}`,
+            phone: formData.phone || null,
+            website: formData.website || null,
+            verification_status: 'pending'
+          });
 
-        // Call completion callback (success message will be shown by parent component)
-        onRegistrationComplete?.({
-          user: authData.user,
-          role: formData.userType,
-          profile: formData
-        });
+        if (sellerError) {
+          console.error('Seller profile creation error:', sellerError);
+          // If profile already exists, ignore error and continue
+          if (!sellerError.message.includes('duplicate key') && !sellerError.message.includes('already exists')) {
+            throw new Error(`Verkäufer-Profil konnte nicht erstellt werden: ${sellerError.message}`);
+          }
+        }
       }
+
+      console.log('Registration complete - calling callback');
+
+      // Call completion callback (success message will be shown by parent component)
+      onRegistrationComplete?.({
+        user: authData.user,
+        role: formData.userType,
+        profile: formData
+      });
+
+      // Redirect to dealroom after short delay
+      setTimeout(() => {
+        window.location.href = '/dealroom';
+      }, 500);
+
     } catch (error: any) {
       console.error('Registration error:', error);
-      setError(error.message || 'Registrierung fehlgeschlagen. Bitte versuchen Sie es erneut.');
+      
+      // User-friendly error messages
+      let errorMessage = 'Registrierung fehlgeschlagen. Bitte versuchen Sie es erneut.';
+      
+      if (error.message?.includes('already registered') || error.message?.includes('already exists')) {
+        errorMessage = 'Diese E-Mail-Adresse ist bereits registriert. Bitte melden Sie sich an oder verwenden Sie eine andere E-Mail-Adresse.';
+      } else if (error.message?.includes('invalid email')) {
+        errorMessage = 'Ungültige E-Mail-Adresse. Bitte überprüfen Sie Ihre Eingabe.';
+      } else if (error.message?.includes('password')) {
+        errorMessage = 'Passwort ist zu schwach oder ungültig. Bitte verwenden Sie mindestens 8 Zeichen.';
+      } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
+        errorMessage = 'Netzwerkfehler. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -212,9 +292,21 @@ export function UserRegistration({ onRegistrationComplete, onClose }: UserRegist
     }
   };
 
+  // Handle overlay click with onMouseDown to prevent click-through issues
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget && onClose) {
+      onClose();
+    }
+  };
+
   return (
     <div className={styles.registrationModal}>
-      <div className={styles.modalOverlay} onClick={onClose}></div>
+      {onClose && (
+        <div 
+          className={styles.modalOverlay} 
+          onMouseDown={handleOverlayClick}
+        ></div>
+      )}
       <div className={styles.modalContent}>
         {/* Header */}
         <div className={styles.modalHeader}>
@@ -242,12 +334,14 @@ export function UserRegistration({ onRegistrationComplete, onClose }: UserRegist
               </div>
             </div>
           </div>
-          <button className={styles.closeButton} onClick={onClose}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18"/>
-              <line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-          </button>
+          {onClose && (
+            <button className={styles.closeButton} onClick={onClose}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          )}
         </div>
 
         {/* Content */}

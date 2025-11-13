@@ -49,7 +49,6 @@ export function DocumentManager({ dealId, onDocumentUpload, onDocumentDelete }: 
       reader.readAsDataURL(file);
       reader.onload = () => {
         const result = reader.result as string;
-        // Remove data:type;base64, prefix
         const base64 = result.split(',')[1];
         resolve(base64);
       };
@@ -58,32 +57,35 @@ export function DocumentManager({ dealId, onDocumentUpload, onDocumentDelete }: 
   };
 
   useEffect(() => {
-    loadDocuments();
+    if (dealId) {
+      loadDocuments();
+    }
   }, [dealId]);
 
   const loadDocuments = async () => {
     setLoading(true);
     try {
       const supabase = getSupabaseBrowserClient();
-      
-      // Check if deal_documents table exists
-      const { data, error } = await supabase
-        .from("deal_documents")
-        .select("*")
-        .eq("deal_id", dealId)
-        .order("uploaded_at", { ascending: false });
-
-      if (error) {
-        console.warn('deal_documents table not found or no access:', error);
-        // Return empty array instead of throwing error
-        setDocuments([]);
+      if (!supabase) {
+        console.error('Supabase client not available');
+        setLoading(false);
         return;
       }
-      
-      setDocuments(data || []);
-    } catch (error) {
-      console.error('Error loading documents:', error);
-      // Set empty array on error to prevent crashes
+
+      const { data, error } = await supabase
+        .from('deal_documents')
+        .select('*')
+        .eq('deal_id', dealId)
+        .order('uploaded_at', { ascending: false });
+
+      if (error) {
+        console.error('Error loading documents:', error);
+        setDocuments([]);
+      } else {
+        setDocuments(data || []);
+      }
+    } catch (err) {
+      console.error('Error loading documents:', err);
       setDocuments([]);
     } finally {
       setLoading(false);
@@ -91,139 +93,118 @@ export function DocumentManager({ dealId, onDocumentUpload, onDocumentDelete }: 
   };
 
   const handleFileUpload = async (files: FileList) => {
-    if (!files.length) return;
+    if (!files || files.length === 0) return;
 
     setUploading(true);
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) {
+      console.error('Supabase client not available');
+      setUploading(false);
+      return;
+    }
+
     try {
-      const supabase = getSupabaseBrowserClient();
-      const { data: auth } = await supabase.auth.getUser();
-      
-      if (!auth.user) throw new Error('User not authenticated');
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        alert('Bitte melden Sie sich an, um Dokumente hochzuladen.');
+        setUploading(false);
+        return;
+      }
 
-      const uploadPromises = Array.from(files).map(async (file) => {
-        // Generate unique filename
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-        const filePath = `deals/${dealId}/${fileName}`;
+      // Process each file
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        console.log(`Uploading file ${i + 1}/${files.length}:`, file.name);
 
-        // Upload file to Supabase Storage
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('deal-documents')
-          .upload(filePath, file, {
-            cacheControl: '3600',
-            upsert: false
-          });
+        // Convert to base64 for storage
+        const base64 = await fileToBase64(file);
 
-        if (uploadError) {
-          console.warn('Storage upload failed, creating fallback:', uploadError);
-          // Create fallback document without storage
-          const fallbackDoc = {
-            id: `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-            deal_id: dealId,
-            name: file.name,
-            type: file.type,
-            size: file.size,
-            url: `data:${file.type};base64,${await fileToBase64(file)}`,
-            uploaded_by: auth.user.id,
-            category: selectedCategory,
-            description: uploadDescription,
-            uploaded_at: new Date().toISOString()
-          };
-          return fallbackDoc;
-        }
-
-        // Get public URL
-        const { data: urlData } = supabase.storage
-          .from('deal-documents')
-          .getPublicUrl(filePath);
-
-        // Save document metadata to database
-        const { data: docData, error: docError } = await supabase
-          .from("deal_documents")
+        // Insert document record
+        const { data: docData, error: insertError } = await supabase
+          .from('deal_documents')
           .insert({
             deal_id: dealId,
             name: file.name,
-            type: file.type,
+            type: file.type || 'application/octet-stream',
             size: file.size,
-            url: urlData.publicUrl,
-            uploaded_by: auth.user.id,
+            file_data: base64,
+            uploaded_by: user.id,
+            uploaded_at: new Date().toISOString(),
             category: selectedCategory,
-            description: uploadDescription
+            description: uploadDescription || null
           })
           .select()
           .single();
 
-        if (docError) {
-          console.warn('Database insert failed, creating fallback document:', docError);
-          // Create fallback document without database
-          const fallbackDoc = {
-            id: `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-            deal_id: dealId,
-            name: file.name,
-            type: file.type,
-            size: file.size,
-            url: urlData.publicUrl,
-            uploaded_by: auth.user.id,
-            category: selectedCategory,
-            description: uploadDescription,
-            uploaded_at: new Date().toISOString()
-          };
-          return fallbackDoc;
+        if (insertError) {
+          console.error(`Error uploading ${file.name}:`, insertError);
+          alert(`Fehler beim Hochladen von ${file.name}: ${insertError.message}`);
+          continue;
         }
-        
-        return docData;
-      });
 
-      const uploadedDocs = await Promise.all(uploadPromises);
-      setDocuments(prev => [...uploadedDocs, ...prev]);
-      
+        // Generate URL (for now, we'll create a data URL)
+        const url = `data:${file.type};base64,${base64}`;
+        
+        const newDoc: Document = {
+          id: docData.id,
+          name: docData.name,
+          type: docData.type,
+          size: docData.size,
+          url: url,
+          uploaded_at: docData.uploaded_at,
+          uploaded_by: docData.uploaded_by,
+          deal_id: docData.deal_id,
+          category: docData.category,
+          description: docData.description
+        };
+
+        setDocuments(prev => [newDoc, ...prev]);
+        onDocumentUpload?.(newDoc);
+      }
+
       // Reset form
       setUploadDescription('');
       setSelectedCategory('general');
       
-      // Notify parent component
-      uploadedDocs.forEach(doc => onDocumentUpload?.(doc));
-      
-      // Show success message
-      const successMessage = uploadedDocs.length === 1 
-        ? `✅ Dokument "${uploadedDocs[0].name}" erfolgreich hochgeladen!`
-        : `✅ ${uploadedDocs.length} Dokumente erfolgreich hochgeladen!`;
-      
-      alert(successMessage);
-      
-    } catch (error) {
-      console.error('Error uploading documents:', error);
-      alert('❌ Fehler beim Hochladen der Dokumente. Bitte versuchen Sie es erneut.');
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+
+      alert('Dokumente erfolgreich hochgeladen!');
+    } catch (error: any) {
+      console.error('Error uploading files:', error);
+      alert(`Fehler beim Hochladen: ${error.message}`);
     } finally {
       setUploading(false);
     }
   };
 
-  const handleDeleteDocument = async (documentId: string, fileName: string) => {
-    if (!confirm('Sind Sie sicher, dass Sie dieses Dokument löschen möchten?')) return;
+  const handleDeleteDocument = async (docId: string, docName: string) => {
+    if (!confirm(`Möchten Sie "${docName}" wirklich löschen?`)) return;
+
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) {
+      console.error('Supabase client not available');
+      return;
+    }
 
     try {
-      const supabase = getSupabaseBrowserClient();
-      
-      // Delete from storage
-      const filePath = `deals/${dealId}/${fileName}`;
-      await supabase.storage
-        .from('deal-documents')
-        .remove([filePath]);
-
-      // Delete from database
       const { error } = await supabase
-        .from("deal_documents")
+        .from('deal_documents')
         .delete()
-        .eq("id", documentId);
+        .eq('id', docId);
 
-      if (error) throw error;
-
-      setDocuments(prev => prev.filter(doc => doc.id !== documentId));
-      onDocumentDelete?.(documentId);
-    } catch (error) {
+      if (error) {
+        console.error('Error deleting document:', error);
+        alert(`Fehler beim Löschen: ${error.message}`);
+      } else {
+        setDocuments(prev => prev.filter(doc => doc.id !== docId));
+        onDocumentDelete?.(docId);
+      }
+    } catch (error: any) {
       console.error('Error deleting document:', error);
-      alert('Fehler beim Löschen des Dokuments. Bitte versuchen Sie es erneut.');
+      alert(`Fehler beim Löschen: ${error.message}`);
     }
   };
 
@@ -241,27 +222,57 @@ export function DocumentManager({ dealId, onDocumentUpload, onDocumentDelete }: 
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       handleFileUpload(e.dataTransfer.files);
     }
   };
 
-  const formatFileSize = (bytes: number) => {
+  const handleUploadClick = () => {
+    if (uploading) return;
+    if (!fileInputRef.current) {
+      console.error('File input not available');
+      return;
+    }
+    
+    console.log('Opening file picker...');
+    fileInputRef.current.click();
+  };
+
+  const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
   };
 
   const getFileIcon = (type: string) => {
-    if (type.includes('pdf')) return '📄';
-    if (type.includes('image')) return '🖼️';
-    if (type.includes('word') || type.includes('document')) return '📝';
-    if (type.includes('excel') || type.includes('spreadsheet')) return '📊';
-    if (type.includes('powerpoint') || type.includes('presentation')) return '📽️';
-    return '📎';
+    if (type.includes('image')) {
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21,15 16,10 5,21"/>
+        </svg>
+      );
+    } else if (type.includes('pdf')) {
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14,2 14,8 20,8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10,9 9,9 8,9"/>
+        </svg>
+      );
+    }
+    return (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+        <polyline points="13,2 13,9 20,9"/>
+      </svg>
+    );
   };
 
   const getCategoryLabel = (category: string) => {
@@ -271,6 +282,22 @@ export function DocumentManager({ dealId, onDocumentUpload, onDocumentDelete }: 
 
   return (
     <div className={styles.documentManager}>
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        id={`file-upload-${dealId}`}
+        type="file"
+        multiple
+        onChange={(e) => {
+          if (e.target.files && e.target.files.length > 0) {
+            handleFileUpload(e.target.files);
+          }
+        }}
+        className={styles.hiddenInput}
+        accept="*/*"
+        disabled={uploading}
+      />
+
       {/* Upload Area */}
       <div className={styles.uploadSection}>
         <div 
@@ -279,7 +306,6 @@ export function DocumentManager({ dealId, onDocumentUpload, onDocumentDelete }: 
           onDragLeave={handleDrag}
           onDragOver={handleDrag}
           onDrop={handleDrop}
-          onClick={() => fileInputRef.current?.click()}
         >
           <div className={styles.uploadContent}>
             <div className={styles.uploadIcon}>
@@ -295,12 +321,21 @@ export function DocumentManager({ dealId, onDocumentUpload, onDocumentDelete }: 
             <p className={styles.uploadSubtitle}>
               Ziehen Sie Dateien hierher oder klicken Sie zum Auswählen
             </p>
+            
+            <button
+              type="button"
+              onClick={handleUploadClick}
+              disabled={uploading}
+              className={styles.uploadButton}
+            >
+              {uploading ? 'Wird hochgeladen...' : 'Datei auswählen'}
+            </button>
+
             <div className={styles.uploadForm}>
               <select 
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className={styles.categorySelect}
-                onClick={(e) => e.stopPropagation()}
               >
                 {categories.map(cat => (
                   <option key={cat.value} value={cat.value}>
@@ -313,19 +348,10 @@ export function DocumentManager({ dealId, onDocumentUpload, onDocumentDelete }: 
                 onChange={(e) => setUploadDescription(e.target.value)}
                 placeholder="Beschreibung (optional)"
                 className={styles.descriptionInput}
-                onClick={(e) => e.stopPropagation()}
               />
             </div>
           </div>
         </div>
-        
-        <input
-          ref={fileInputRef}
-          type="file"
-          multiple
-          onChange={(e) => e.target.files && handleFileUpload(e.target.files)}
-          className={styles.hiddenInput}
-        />
       </div>
 
       {/* Documents List */}
@@ -334,26 +360,6 @@ export function DocumentManager({ dealId, onDocumentUpload, onDocumentDelete }: 
           <h3 className={styles.sectionTitle}>
             Dokumente ({documents.length})
           </h3>
-          <div className={styles.viewControls}>
-            <button className={styles.viewButton}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="3" width="7" height="7"/>
-                <rect x="14" y="3" width="7" height="7"/>
-                <rect x="14" y="14" width="7" height="7"/>
-                <rect x="3" y="14" width="7" height="7"/>
-              </svg>
-            </button>
-            <button className={styles.viewButton}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="8" y1="6" x2="21" y2="6"/>
-                <line x1="8" y1="12" x2="21" y2="12"/>
-                <line x1="8" y1="18" x2="21" y2="18"/>
-                <line x1="3" y1="6" x2="3.01" y2="6"/>
-                <line x1="3" y1="12" x2="3.01" y2="12"/>
-                <line x1="3" y1="18" x2="3.01" y2="18"/>
-              </svg>
-            </button>
-          </div>
         </div>
 
         {loading ? (
@@ -418,7 +424,6 @@ export function DocumentManager({ dealId, onDocumentUpload, onDocumentDelete }: 
                 <polyline points="14,2 14,8 20,8"/>
                 <line x1="16" y1="13" x2="8" y2="13"/>
                 <line x1="16" y1="17" x2="8" y2="17"/>
-                <polyline points="10,9 9,9 8,9"/>
               </svg>
             </div>
             <h4>Noch keine Dokumente</h4>

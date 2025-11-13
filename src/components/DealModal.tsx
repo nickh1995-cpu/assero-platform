@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { checkUserVerification } from "@/lib/verification";
 import styles from "./DealModal.module.css";
 
 interface DealModalProps {
@@ -14,7 +15,7 @@ export function DealModal({ isOpen, onClose, onDealCreated }: DealModalProps) {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    asset_type: 'real_estate',
+    asset_type: 'real-estate',
     deal_size: '',
     currency: 'EUR',
     expected_close_date: '',
@@ -27,6 +28,27 @@ export function DealModal({ isOpen, onClose, onDealCreated }: DealModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      
+      // ESC key handler
+      const handleEsc = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          onClose();
+        }
+      };
+      
+      document.addEventListener('keydown', handleEsc);
+      
+      return () => {
+        document.body.style.overflow = '';
+        document.removeEventListener('keydown', handleEsc);
+      };
+    }
+  }, [isOpen, onClose]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -34,61 +56,105 @@ export function DealModal({ isOpen, onClose, onDealCreated }: DealModalProps) {
 
     try {
       const supabase = getSupabaseBrowserClient();
-      const { data: { user } } = await supabase.auth.getUser();
       
-      if (!user) {
+      // Quick auth check only - don't block on full verification
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !user) {
         setError('Sie müssen angemeldet sein, um einen Deal zu erstellen.');
+        setLoading(false);
+        return;
+      }
+      
+      // Check if email is confirmed (required for creating deals)
+      if (!user.email_confirmed_at) {
+        setError('Bitte bestätigen Sie Ihre E-Mail-Adresse, um Deals zu erstellen.');
+        setLoading(false);
         return;
       }
 
-      const dealData = {
-        title: formData.title,
-        description: formData.description,
-        asset_type: formData.asset_type,
-        deal_size: parseFloat(formData.deal_size),
-        currency: formData.currency,
-        expected_close_date: formData.expected_close_date,
+      // Map deal_stage to valid status values from database constraint
+      // Database allows: 'initial', 'interest', 'negotiation', 'due-diligence', 'contract', 'closed', 'cancelled', 'nda_sent', 'nda_signed'
+      const statusMap: Record<string, string> = {
+        'initial': 'initial',
+        'negotiation': 'negotiation',
+        'due_diligence': 'due-diligence',
+        'due-diligence': 'due-diligence',
+        'contract': 'contract',
+        'closing': 'closed',
+        'completed': 'closed'
+      };
+      
+      // Ensure we always have a valid status
+      const mappedStatus = statusMap[formData.deal_stage] || 'initial';
+      
+      // Validate the status against database constraints
+      const validStatuses = ['initial', 'interest', 'negotiation', 'due-diligence', 'contract', 'closed', 'cancelled', 'nda_sent', 'nda_signed'];
+      const finalStatus = validStatuses.includes(mappedStatus) ? mappedStatus : 'initial';
+      
+      console.log('Deal status mapping:', {
         deal_stage: formData.deal_stage,
+        mappedStatus,
+        finalStatus
+      });
+      
+      // Ensure asset_type is valid (fix potential browser cache issue)
+      const validAssetTypes = ['real-estate', 'luxury-watches', 'vehicles', 'art', 'collectibles', 'real_estate'];
+      const assetType = validAssetTypes.includes(formData.asset_type) 
+        ? formData.asset_type 
+        : 'real-estate';
+      
+      // Prepare deal data for the deals table
+      const dealData = {
+        user_id: user.id, // Required for RLS
+        title: formData.title,
+        description: formData.description || null,
+        asset_type: assetType, // Use validated asset type
+        status: finalStatus, // Use validated status
+        deal_value: parseFloat(formData.deal_size) || null,
+        deal_size: parseFloat(formData.deal_size) || null, // Store both for compatibility
+        currency: formData.currency,
+        expected_close_date: formData.expected_close_date || null,
         priority: formData.priority,
-        location: formData.location,
-        seller_contact: formData.seller_contact,
-        buyer_contact: formData.buyer_contact,
-        created_by: user.id,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        location: formData.location || null,
+        seller_contact: formData.seller_contact || null,
+        buyer_contact: formData.buyer_contact || null,
+        created_by: user.id
       };
 
-      // Try to insert into deal_pipeline table, with fallback
-      let dealResult;
-      try {
-        const { data, error: insertError } = await supabase
-          .from('deal_pipeline')
-          .insert(dealData)
-          .select()
-          .single();
+      console.log('Creating deal with data:', {
+        ...dealData,
+        asset_type_validated: assetType,
+        status_mapped: mappedStatus,
+        status_final: finalStatus
+      });
+      
+      // Double-check: log the exact status being sent
+      console.log('Final status value being sent:', finalStatus, 'Type:', typeof finalStatus);
+      console.log('Valid statuses:', validStatuses);
+      console.log('Is status valid?', validStatuses.includes(finalStatus));
 
-        if (insertError) {
-          console.warn('deal_pipeline table not found, creating fallback deal:', insertError);
-          // Create fallback deal object
-          dealResult = {
-            id: `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-            ...dealData,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          };
-        } else {
-          dealResult = data;
-        }
-      } catch (tableError) {
-        console.warn('deal_pipeline table not accessible, creating fallback deal:', tableError);
-        // Create fallback deal object
-        dealResult = {
-          id: `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-          ...dealData,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        };
+      // Insert into deals table (deal_pipeline is a view, not directly insertable)
+      const { data: dealResult, error: insertError } = await supabase
+        .from('deals')
+        .insert(dealData)
+        .select()
+        .single();
+
+      if (insertError) {
+        console.error('Error creating deal:', insertError);
+        setError(`Fehler beim Erstellen des Deals: ${insertError.message}`);
+        setLoading(false);
+        return;
       }
+
+      if (!dealResult) {
+        setError('Deal wurde erstellt, aber keine Daten zurückgegeben.');
+        setLoading(false);
+        return;
+      }
+
+      console.log('Deal created successfully:', dealResult);
 
       onDealCreated(dealResult);
       onClose();
@@ -100,7 +166,7 @@ export function DealModal({ isOpen, onClose, onDealCreated }: DealModalProps) {
       setFormData({
         title: '',
         description: '',
-        asset_type: 'real_estate',
+        asset_type: 'real-estate',
         deal_size: '',
         currency: 'EUR',
         expected_close_date: '',
@@ -121,17 +187,42 @@ export function DealModal({ isOpen, onClose, onDealCreated }: DealModalProps) {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    
+    // Normalize asset_type values to match database constraints
+    let normalizedValue = value;
+    if (name === 'asset_type') {
+      const assetTypeMap: Record<string, string> = {
+        'real_estate': 'real-estate',
+        'real-estate': 'real-estate',
+        'luxury_goods': 'luxury-watches',
+        'luxury-watches': 'luxury-watches',
+        'vehicles': 'vehicles',
+        'art': 'art',
+        'jewelry': 'luxury-watches',
+        'collectibles': 'collectibles',
+        'other': 'collectibles'
+      };
+      normalizedValue = assetTypeMap[value] || 'real-estate';
+    }
+    
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: normalizedValue
     }));
   };
 
   if (!isOpen) return null;
 
+  // Handle overlay click with onMouseDown to prevent click-through issues
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div className={styles.modalOverlay} onClick={onClose}>
-      <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+    <div className={styles.modalOverlay} onMouseDown={handleOverlayClick}>
+      <div className={styles.modalContent}>
         <div className={styles.modalHeader}>
           <h2 className={styles.modalTitle}>Neuen Deal erstellen</h2>
           <button className={styles.closeButton} onClick={onClose}>
@@ -187,12 +278,12 @@ export function DealModal({ isOpen, onClose, onDealCreated }: DealModalProps) {
                 className={styles.formSelect}
                 required
               >
-                <option value="real_estate">Immobilie</option>
-                <option value="luxury_goods">Luxusgüter</option>
-                <option value="art">Kunst</option>
-                <option value="jewelry">Schmuck</option>
+                <option value="real-estate">Immobilie</option>
+                <option value="luxury-watches">Luxusuhren</option>
                 <option value="vehicles">Fahrzeuge</option>
-                <option value="other">Sonstiges</option>
+                <option value="art">Kunst</option>
+                <option value="collectibles">Sammlerobjekte</option>
+                <option value="real_estate">Immobilie (Alt)</option>
               </select>
             </div>
 
